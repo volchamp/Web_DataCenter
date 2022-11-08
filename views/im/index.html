@@ -463,7 +463,7 @@
 											<img src="./images/file.png" />
 										</div>
 										<div style="height: 1px;background-color: #f1f1f1;margin-top: 10px;"></div>
-										<div style="color: lightgray;margin-top: 2px;">平生电脑版即时通讯，点击可下载</div>
+										<div style="color: lightgray;margin-top: 2px;">超超飞书，点击可下载</div>
 									</div>
 								</div>
 							</li>
@@ -568,8 +568,8 @@
 					listType: 0, //标识当前是什么列表，是通讯录（0），还是聊天列表（1）
 					flagPosition: 0, //表示是否是点击获取更多消息按钮，如果是(1)列表要定位到顶部
 					fileList: [], //上传之后返回的文件路径列表
-					// uploadPort: curl + '/attach/uploadAtt', //图片上传接口
-					uploadPort: curlCos + '/cos/tencentCosUpload', //图片上传接口
+					uploadPort: curl + '/attach/uploadAtt', //图片上传接口
+					// uploadPort: curlCos + '/cos/tencentCosUpload', //图片上传接口cos
 					showModalScreenshot: false ,//是否显示截图发送窗口
 					showModalFriendsManage:false ,//是否显示好友管理模态框
 					submitLoading: false,
@@ -1077,8 +1077,8 @@
 							if(this.contentType == 3){//发送类型为3图片
 								
 							this.picture = {
-								// "pictureUrl": imgurl + viewUrl,
-								"pictureUrl": curlCos +"/"+ url
+								"pictureUrl": imgurl + viewUrl,
+								// "pictureUrl": curlCos +"/"+ url
 							}
 							} else if(this.contentType == 5){//文件
 								this.fileName=original;
@@ -1120,8 +1120,8 @@
 							"fileBase64": savedPictureContent,
 							"fileName": "1." + extendName
 						};
-						// XEAjax.post(`${curl}/attach/uploadByBase64`, para).then(data => {
-						XEAjax.post(`${curlCos}/cos/uploadCosByStream`, para).then(data => {
+						XEAjax.post(`${curl}/attach/uploadByBase64`, para).then(data => {
+						// XEAjax.post(`${curlCos}/cos/uploadCosByStream`, para).then(data => {
 							console.log(data)
 							var res = data;
 							if (res.code == 200) {
@@ -1134,8 +1134,8 @@
 								var viewUrl = data.viewUrl;
 
 								this.picture = {
-									// "pictureUrl": imgurl + viewUrl,
-									"pictureUrl": curlCos +"/"+ url
+									"pictureUrl": imgurl + viewUrl,
+									// "pictureUrl": curlCos +"/"+ url
 								}
 								this.sendMsg();
 								//关闭截图弹窗
