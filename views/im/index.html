@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>即时通讯系统</title>
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<link rel="stylesheet" href="css/main.css" />
+
+		<link rel="stylesheet" href="../../lib/element-ui/theme-chalk/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table-plugin-element/style.css">
+		<link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="../../static/css/expand-table.css" />
+		<link rel="stylesheet" type="text/css" href="../../static/css/common.css">
+		<script type="text/javascript" src="../../lib/vue/vue.js"></script>
+		<script type="text/javascript" src="../../lib/xe-utils/xe-utils.js"></script>
+		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
+		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
+		<script type="text/javascript" src="../../lib/xe-ajax/xe-ajax.js"></script>
+		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../static/js/webApi.js"></script>
+		<style>
+			.el-badge__content {
+				border: 0px !important;
+				padding: 0 5px;
+				height: 16px;
+				line-height: 16px;
+			}
+
+			.input_btn {
+				height: 42px;
+				padding: 0 28px;
+			}
+
+			.input_item {
+				height: 42px;
+				padding: 0 2px;
+			}
+
+			.input_item a {
+				position: relative;
+				display: inline-block;
+				height: 20px;
+				width: 24px;
+				margin-top: 11px;
+				margin-right: 8px;
+			}
+
+			.input_a1 {
+				background: url(images/icon/icon13.png) no-repeat center center;
+			}
+
+			.input_a1:hover {
+				background: url(images/icon/icon13_1.png) no-repeat center center;
+			}
+
+			.input_a2 {
+				background: url(images/icon/img.png) no-repeat center center;
+			}
+
+			.input_a2:hover {
+				background: url(images/icon/img_1.png) no-repeat center center;
+			}
+
+			.input_a3 {
+				background: url(images/icon/icon14.png) no-repeat center center;
+			}
+
+			.input_a3:hover {
+				background: url(images/icon/icon14_1.png) no-repeat center center;
+			}
+
+			.input_a4 {
+				background: url(images/icon/icon15.png) no-repeat center center;
+			}
+
+			.input_a4:hover {
+				background: url(images/icon/icon15_1.png) no-repeat center center;
+			}
+
+			.input_a5 {
+				background: url(images/icon/more.png) no-repeat center center;
+			}
+
+			.input_a5:hover {
+				background: url(images/icon/more_1.png) no-repeat center center;
+			}
+
+			.el-upload {
+				display: inline-block;
+				text-align: center;
+				cursor: pointer;
+				outline: 0;
+				width: 40px;
+			}
+
+			input[type=file] {
+				display: none;
+			}
+
+			.send {
+				border: 1px solid #e5e5e5;
+				background: #f5f5f5;
+				color: #666;
+				padding: 0 8px;
+				outline: 0;
+				height: 40px;
+				float: right;
+				margin-top: 8px;
+				margin-right: 28px;
+			}
+
+			.send:hover {
+				background: #09bb07;
+				color: #fff;
+				border: 1px solid #09bb07;
+			}
+
+			.userAvatar {
+				float: right;
+				width: 34px;
+				height: 34px;
+				border-radius: 2px;
+				margin-right: 5px;
+			}
+
+			#sendScreenshot {
+				border: 1px solid #1e96ff;
+				background: #1e96ff;
+				color: #fff;
+				height: 35px;
+				width: 120px;
+				outline: none;
+			}
+
+			#sendScreenshot:hover {
+				background: #1D8DF1;
+				color: #fff;
+				border: 1px solid #1D8DF1;
+			}
+
+			.screenshot {
+				width: 330px;
+				height: 380px;
+				background: #FFF;
+				box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+				border: 1px solid lightgray;
+				border-radius: 4px;
+				overflow: hidden;
+				position: absolute;
+				right: 20px;
+				bottom: 23px;
+				z-index: 999;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box" id="app">
+			<div class="wechat">
+				<template>
+				    <!-- 好友管理模态框 -->
+				    <vxe-modal ref="xModal" v-model="showModalFriendsManage" title="好友管理" style="z-index: 9999;"
+				        width="1000" :loading="submitLoading" resize destroy-on-close>
+				        <vxe-table stripe highlight-current-row highlight-hover-row :data="friendsList">
+							<vxe-table-column field="userId" title="账号"></vxe-table-column>
+				            <vxe-table-column field="nickName" title="姓名"></vxe-table-column>
+							<vxe-table-column field="userPhone" title="电话"></vxe-table-column>
+				            <vxe-table-column field="email" title="邮箱"></vxe-table-column>
+				            <vxe-table-column field="sex" :formatter="formatSex" title="性别"></vxe-table-column>
+							 <vxe-table-column field="createTime" :formatter="formatTime" title="添加好友时间"></vxe-table-column>
+							
+							<vxe-table-column field="caozuo" align="center" width="200" title="操作">
+							    <template v-slot="{row}">
+							        <vxe-button type="text" content="删除好友" icon="fa fa-cog" @click="deleteFriend(row)" title="删除好友"
+							            style="color:#3c8ddb;">
+							        </vxe-button>
+							        <vxe-button type="text" content="拉黑" icon="fa fa-hand-pointer-o" @click="blockFriend(row)"
+							            title="拉黑" style="color:#3c8ddb;">
+							        </vxe-button>
+							    </template>
+							</vxe-table-column>
+				        </vxe-table>
+<!-- 				        <div class="block" style="margin-top: 10px;">
+				            <el-pagination @size-change="handleSizeChangeHis" @current-change="handleCurrentChangeHis"
+				                :current-page="currentPageHis" :page-sizes="[10, 20, 30, 40]" :page-size="pageSizeHis"
+				                layout="total, sizes, prev, pager, next, jumper" :total="totalSizeHis">
+				            </el-pagination>
+				        </div> -->
+				    </vxe-modal>
+				</template>
+
+				<template>
+					<!-- 截图发送 -->
+					<div v-show="showModalScreenshot" class="screenshot">
+						<div style="display: flex;">
+							<div style="flex: 1;"></div>
+							<img @click="closeScreenshot" src="../../static/img/close2.png"
+								style="margin: 3px 6px 0px 0px;height: 20px;width: 20px;" />
+						</div>
+						<div
+							style="display: flex;flex-direction: column;align-items: center;width: 100%;height: 340px;">
+							<div style="flex: 1;width: 100%;padding: 10px 10px 10px 10px;">
+								<img id="imgshow" src="images/bg.jpg" style="width: 100%;height: 290px;" />
+							</div>
+							<div>
+								<button id="sendScreenshot" @click="sendScreenshot">发送截图</button>
+							</div>
+						</div>
+					</div>
+				</template>
+
+				<div class="sidestrip">
+					<div class="am-dropdown" data-am-dropdown>
+						<!--头像插件-->
+						<div class="own_head am-dropdown-toggle"
+							:style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"></div>
+						<div class="am-dropdown-content">
+							<div class="own_head_top">
+								<div class="own_head_top_text">
+									<p class="own_name">{{userInfoData.userName}}<img src="images/icon/head.png"
+											alt="" /></p>
+									<p class="own_numb">账号：{{userInfoData.userId}}</p>
+								</div>
+								<img :src="userInfoData.userAvatar" alt="" />
+							</div>
+							<div class="own_head_bottom" style="display: block;">
+								<p><span>地区</span>云南 昆明</p>
+								<div class="own_head_bottom_img">
+									<a href=""><img src="images/icon/head_1.png" /></a>
+									<a href=""><img src="images/icon/head_2.png" /></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--三图标-->
+					<div class="sidestrip_icon">
+						<a id="si_1" style="background: url(images/icon/head_2_1.png) no-repeat;"></a>
+						<a id="si_2"></a>
+						<a id="si_3"></a>
+					</div>
+
+					<!--底部扩展键-->
+					<div id="doc-dropdown-justify-js">
+						<div class="am-dropdown" id="doc-dropdown-js" style="position: initial;">
+							<div class="sidestrip_bc am-dropdown-toggle"></div>
+							<ul class="am-dropdown-content" style="">
+								<li style="display: none;">
+									<a href="#"
+										data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0, width: 400, height: 225}">意见反馈</a>
+									<div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+										<div class="am-modal-dialog">
+											<div class="am-modal-hd">Modal 标题
+												<a href="javascript: void(0)" class="am-close am-close-spin"
+													data-am-modal-close>&times;</a>
+											</div>
+											<div class="am-modal-bd">
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li><a href="#" @click="openFriends">添加好友</a></li>
+								<li><a href="#" @click="friendsManage">好友管理</a></li>
+								<li v-show="isShowSysManage"><a href="#" @click="sysManage">系统管理</a></li>
+								<li><a href="#">设置</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!--聊天列表-->
+				<div class="middle on">
+					<div class="wx_search">
+						<input type="text" v-model="searchValChat" placeholder="搜索" />
+						<button @click="openFriends">+</button>
+					</div>
+					<div class="office_text">
+						<ul class="user_list">
+							<div v-for="(item,index) in chatList">
+								<li :class="{user_active:changeChatBackground==index}" @click="chatClick(item,index)">
+									<el-badge v-if="item.userChatId!=chatDetail.userChatId&&item.unreadcount!=0"
+										:value="item.unreadcount" :max="99" class="item" style="float: left;">
+										<div class="user_head">
+											<img :src="item.headUrl" />
+										</div>
+									</el-badge>
+									<div v-else class="user_head">
+										<img :src="item.headUrl" />
+									</div>
+									<div class="user_text" style="padding-left: 10px;">
+										<p class="user_name">{{item.nickName}}</p>
+										<p class="user_message">{{item.message}}</p>
+									</div>
+									<div class="user_time">{{item.sendDate | formatTime}}</div>
+								</li>
+							</div>
+						</ul>
+					</div>
+				</div>
+
+				<!--好友列表-->
+				<div class="middle">
+					<div class="wx_search">
+						<input type="text" v-model="searchValFriends" placeholder="搜索" />
+						<button @click="openFriends">+</button>
+					</div>
+					<div class="office_text">
+						<ul class="friends_list">
+							<li>
+								<!-- <p>A</p> -->
+								<div @click="friendsClick(item,index)" class="friends_box"
+									v-for="(item,index) in friendsList">
+									<div class="user_head"><img :src="item.headUrl" /></div>
+									<div class="friends_text">
+										<p class="user_name">{{item.nickName}}</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<!--程序列表-->
+				<div class="middle">
+					<div class="wx_search">
+						<input type="text" placeholder="搜索收藏内容" />
+						<button>+</button>
+					</div>
+					<div class="office_text">
+						<ul class="icon_list">
+							<li class="icon_active">
+								<div class="icon"><img src="images/icon/icon.png" alt="" /></div>
+								<span>全部收藏</span>
+							</li>
+							<li>
+								<div class="icon"><img src="images/icon/icon1.png" alt="" /></div>
+								<span>链接</span>
+							</li>
+							<li>
+								<div class="icon"><img src="images/icon/icon2.png" alt="" /></div>
+								<span>相册</span>
+							</li>
+							<li>
+								<div class="icon"><img src="images/icon/icon3.png" alt="" /></div>
+								<span>笔记</span>
+							</li>
+							<li>
+								<div class="icon"><img src="images/icon/icon4.png" alt="" /></div>
+								<span>文件</span>
+							</li>
+							<li>
+								<div class="icon"><img src="images/icon/icon5.png" alt="" /></div>
+								<span>音乐</span>
+							</li>
+							<li>
+								<div class="icon"><img src="images/icon/icon6.png" alt="" /></div>
+								<span>标签</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+
+				<!--聊天窗口-->
+				<div class="talk_window">
+					<div class="windows_top">
+						<div class="windows_top_box">
+							<span>{{chatDetail.nickName}}</span>
+							<ul class="window_icon">
+								<li><a><img src="images/icon/icon8.png" /></a></li>
+								<li><a><img src="images/icon/icon9.png" /></a></li>
+								<li><a><img src="images/icon/icon10.png" /></a></li>
+							</ul>
+							<div class="extend" class="am-btn am-btn-success"></div>
+						</div>
+					</div>
+
+					<!--聊天内容-->
+					<div class="windows_body">
+						<ul style="width: 100%;height: 100%; overflow:auto;" id="chatContentList">
+							<li style="text-align: center;" @click="moreMsg"><a>{{pageBtnText}}</a></li>
+							<li v-for="item in msgList"
+								v-if="item.sendUser==userInfoData.userId&&item.receiver==chatDetail.userChatId"
+								class="me" style="width: 100%;">
+								<!-- 发送时间 -->
+								<div style="text-align: center;margin: 5px 0px 10px 0px;font-size: 12px;color: white;">
+									<div
+										style="background-color: lightgray;display: inline;display: inline-block;zoom: 1;padding: 3px 6px 3px 6px;border-radius: 2px;">
+										{{item.sendDate | formatDate}}
+									</div>
+								</div>
+								<!-- 文本 -->
+								<div v-if="item.contentType==1">
+									<img class="userAvatar" :src="userInfoData.userAvatar"
+										:title="userInfoData.userName">
+									<span>{{item.message}}</span>
+								</div>
+								<div v-if="item.contentType==2" style="display: flex;flex-direction: row;">
+									<div style="flex: 1;"></div>
+									<img class="userAvatar" :src="userInfoData.userAvatar"
+										:title="userInfoData.userName">
+								</div>
+								<!-- 图片 -->
+								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
+									<div style="flex: 1;"></div>
+									<div style="">
+										<img style="width: 120px;height: 150px;" :src="item.pictureUrl" />
+									</div>
+									<div>
+										<img class="userAvatar" :src="userInfoData.userAvatar"
+											:title="userInfoData.userName">
+									</div>
+								</div>
+								<!-- 文件 -->
+								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
+									<div style="flex: 1;"></div>
+									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;" @click="fileDld(item.fileDownloadUrl)">
+										<div style="display: flex;text-align: center;">
+											<div style="font-size: 16px;margin-right: 8px;">{{item.fileName}}</div>
+											<img src="./images/file.png" />
+										</div>
+										<div style="height: 1px;background-color: #f1f1f1;margin-top: 10px;"></div>
+										<div style="color: lightgray;margin-top: 2px;">平生电脑版即时通讯，点击可下载</div>
+									</div>
+									<div>
+										<img class="userAvatar" :src="userInfoData.userAvatar"
+											:title="userInfoData.userName">
+									</div>
+								</div>
+							</li>
+							<li v-else-if="item.sendUser==chatDetail.userChatId" class="other" style="width: 100%;">
+								<!-- 发送时间 -->
+								<div style="text-align: center;margin: 5px 0px 10px 0px;font-size: 12px;color: white;">
+									<div
+										style="background-color: lightgray;display: inline;display: inline-block;zoom: 1;padding: 3px 6px 3px 6px;border-radius: 2px;">
+										{{item.sendDate | formatDate}}
+									</div>
+								</div>
+								<!-- 文本 -->
+								<div v-if="item.contentType==1"
+									style="display: flex;flex-direction: row;max-width: 70%;">
+									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
+									<span
+										style="word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap:break-word;overflow:hidden;">{{item.message}}</span>
+									<div style="flex: 1;"></div>
+								</div>
+								<!-- 图片 -->
+								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
+									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
+									<div style="max-width: 20%;margin-left: 12px;">
+										<img style="width: 120px;height: 150px;" :src="item.pictureUrl" />
+									</div>
+								</div>
+								<!-- 文件 -->
+								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
+									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
+									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;" @click="fileDld(item.fileDownloadUrl)">
+										<div style="display: flex;text-align: center;">
+											<div style="font-size: 16px;margin-right: 8px;">{{item.fileName}}</div>
+											<img src="./images/file.png" />
+										</div>
+										<div style="height: 1px;background-color: #f1f1f1;margin-top: 10px;"></div>
+										<div style="color: lightgray;margin-top: 2px;">平生电脑版即时通讯，点击可下载</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+
+					<div class="windows_input" id="talkbox">
+						<div style="display: flex;flex-direction: row;" class="input_btn">
+							<div class="input_item">
+								<a class="input_a1"></a>
+							</div>
+							<!-- <div @click="chooseLocation" class="input_item" title="敬请期待...">
+								<a class="input_a3"></a>
+							</div> -->
+							<div @click="screentShot" class="input_item" title="截图发送">
+								<a class="input_a4"></a>
+							</div>
+							<el-upload class="upload-demo" :action="uploadPort" :before-remove="beforeRemove" :limit="1"
+								:show-file-list="false" :file-list="fileList" :on-preview="filePreviewEvent"
+								:on-remove="fileRemoveEvent" :on-success="fileSuccessEvent" :on-error="fileErrorEvent"
+								:on-progress="fileProgressEvent" :before-upload="fileBeforeEvent"
+								:on-exceed="fileExceedEvent" accept=".ZIP,.RAR,.txt,.exe,.docx,.pdf,.ppt,.war,.xlsx">
+								<div class="input_item" @click="fileClick" title="发送文件">
+									<a class="input_a3"></a>
+								</div>
+							</el-upload>
+							<el-upload class="upload-demo" :action="uploadPort" :before-remove="beforeRemove" :limit="1"
+								:show-file-list="false" :file-list="fileList" :on-preview="filePreviewEvent"
+								:on-remove="fileRemoveEvent" :on-success="fileSuccessEvent" :on-error="fileErrorEvent"
+								:on-progress="fileProgressEvent" :before-upload="fileBeforeEvent"
+								:on-exceed="fileExceedEvent" accept=".jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PBG,.GIF">
+								<div class="input_item" @click="imgClick" title="发送图片">
+									<a class="input_a2"></a>
+								</div>
+							</el-upload>
+							<div style="flex: 1;"></div>
+							<div class="input_item">
+								<a class="input_a5"></a>
+							</div>
+						</div>
+						<div class="input_box">
+							<!-- <div style="background-color: #0000FF;display: flex;flex-direction: column;">
+								<img src="images/icon/icon18_1.png" />
+								<button class="send" @click="sendMsg">发送（S）</button>
+							</div> -->
+							<textarea @click="inputClick" name="" rows="" cols="" v-model="msgContent" id="input_box"
+								@keyup.enter="handelSave($event,1)"></textarea>
+							<button id="send" @click="sendMsg">发送（S）</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/amazeui.min.js"></script>
+		<script type="text/javascript" src="js/zUI.js"></script>
+
+		<!-- 截图相关 -->
+		<!-- <script language="javascript" src="../../views/screenshot/js/jquery-3.3.1.min.js"></script> -->
+		<script language="javascript" src="../../views/screenshot/js/jquery.md5.js"></script>
+		<script language="javascript" src="../../views/screenshot/js/jquery.json-2.3.min.js?v=20150926"></script>
+		<script language="javascript" src="../../views/screenshot/js/niuniucapture.js?v=20171108"></script>
+		<script language="javascript" src="../../views/screenshot/js/capturewrapper.js?v=20171108"></script>
+		<script type="text/javascript" src="js/wechat.js"></script>
+
+		<script type="text/javascript">
+			var websocket = null;
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					userInfoData: { //当前登录人信息
+						userId: null, //当前登录用户账号
+						userAvatar: "", //用户头像
+						userName: "" //用户名
+					},
+					friendsList: [], //通讯录列表
+					chatList: [], //聊天人列表
+					msgList: [], //消息列表
+					changeChatBackground: 0, //控制选中背景，默认选中第一个
+					msgContent: "", //发送文本的内容
+					contentType: "1", //消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
+					picture: null, //发送图片对象
+					location: null, //发送位置信息
+					chatDetail: { //当前聊天人相关信息
+						userChatId: "", //人聊天id
+						nickName: "", //人昵称
+						headUrl: "", //人头像
+						partner_hid: "", //
+						partner_uid: "", //
+						unitId: "", //
+						contentType: "",
+						unreadCount: 0, //消息未读数
+						firstUnreadCount: 0 //第一个默认选中人的消息未读数
+					},
+					pageNumber: 1, //页数
+					pageSize: 50, //每页条数
+					totalPage: 0, //总页数
+					pageBtnText: "查看更多消息",
+					searchValChat: "", //聊天列表搜索框关键字
+					searchValFriends: "", //通讯录搜索框关键字
+					listType: 0, //标识当前是什么列表，是通讯录（0），还是聊天列表（1）
+					flagPosition: 0, //表示是否是点击获取更多消息按钮，如果是(1)列表要定位到顶部
+					fileList: [], //上传之后返回的文件路径列表
+					// uploadPort: curl + '/attach/uploadAtt', //图片上传接口
+					uploadPort: curlCos + '/cos/tencentCosUpload', //图片上传接口
+					showModalScreenshot: false ,//是否显示截图发送窗口
+					showModalFriendsManage:false ,//是否显示好友管理模态框
+					submitLoading: false,
+					isShowSysManage:false,//是否显示系统管理菜单
+					fileName:"",//文件名称
+					fileDownloadUrl:""//文件下载地址
+				},
+				filters: {
+					//局部过滤器
+					formatTime: function(date) {
+						var d = new Date(date);
+						var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1);
+						var day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+						var hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+						var min = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+						var sec = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+
+						var times = "";
+						if (vm.isToday(d.getFullYear() + '-' + month + '-' + day)) {
+							times = hours + ':' + min + ':' + sec;
+						} else {
+							times = d.getFullYear() + '/' + month + '/' + day;
+						}
+						return times;
+					},
+					formatDate: function(date) { //格式化时间（标准时间）
+						var d = new Date(date);
+						var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1);
+						var day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+						var hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+						var min = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+						var sec = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+						var times = d.getFullYear() + '-' + month + '-' + day + " " + hours + ':' + min + ':' + sec;
+						return times;
+					}
+				},
+				created() { //页面加载起始
+					this.userInfoData.userId = getUrlParam("user_id");
+
+					this.getUserInfo();
+					this.getUserRole();
+					this.getCusMsgLatestOneList();
+					this.getCusList();
+
+					//清空聊天列表第一个默认选中的人未读消息数
+					setTimeout(function() {
+						if (vm.chatDetail.firstUnreadCount != 0) {
+							vm.updateUnreadCount(0);
+						}
+					}, 1500)
+
+					//初始化截图相关
+					Init();
+				},
+				watch: { //监听数据
+					msgList: function(newValue, oldValue) {
+						// console.log("msgList值发生改变");
+						if (this.flagPosition == 1) {
+							//消息内容列表滚动到最顶部
+							this.$nextTick(() => { //dom更新完成后再执行
+								var ele = document.getElementById('chatContentList')
+								ele.scrollTop = 0;
+							})
+						} else {
+							//消息内容列表滚动到最底下
+							this.$nextTick(() => { //dom更新完成后再执行
+								var ele = document.getElementById('chatContentList')
+								ele.scrollTop = ele.scrollHeight;
+							})
+						}
+					},
+					searchValChat: function(newValue, oldValue) {
+						//搜索聊天列表
+						this.getCusMsgLatestOneList();
+					},
+					searchValFriends: function(newValue, oldValue) {
+						//搜索通讯录列表
+						this.getCusList();
+					}
+				},
+				methods: {
+					fileClick(){
+						this.contentType=5;
+					},
+					imgClick(){
+						this.contentType=3;
+					},
+					fileDld(fileDownloadUrl){//文件下载
+						window.location.href=fileDownloadUrl;
+					},
+					formatTime({cellValue}){
+						return XEUtils.toDateString(cellValue, 'yyyy-MM-dd HH:mm:ss');
+					},
+					formatSex({cellValue}){
+						switch(cellValue){
+							case 1:
+							return "男";
+							break;
+							case 2:
+							return "女";
+							break;
+						}
+					},
+					deleteFriend(row){
+						//好友id
+						var friendId=row.userId;
+						//登录人id
+						var user_id=this.userInfoData.userId;
+						if(friendId==null||friendId==""){
+							this.showTipsW("未获取到好友id，请刷新重试");
+							return;
+						}
+						var para = {
+							user_id: user_id,
+							friend_id: friendId
+						};
+						// this.$XModal.confirm('您确定删除该好友吗？').then(type => {
+						// 	if (type == "confirm") {
+								XEAjax.post(`${curl}/user/deleteFriend`, para).then(data => {
+									vm.showTipsW(data.msg);
+									vm.getCusList();
+									// if (data.code == "200") {
+										// vm.showTipsS(data.msg);
+										// this.showModalFriendsManage=false;
+									// } else {
+									// 	vm.showTipsW(data.msg);
+									// }
+								})
+						// 	}
+						// })
+						
+					},//删除好友
+					blockFriend(row){},//拉黑
+					isToday(date) { //判断时间是否是今天
+						var d = new Date(date.toString().replace(/-/g, "/"));
+						var todaysDate = new Date();
+						if (d.setHours(0, 0, 0, 0) == todaysDate.setHours(0, 0, 0, 0)) {
+							return true;
+						} else {
+							return false;
+						}
+					},
+					getCusList() { //通讯录
+						var signParms = {
+							user_id: this.userInfoData.userId,
+							keyword: this.searchValFriends
+						};
+						XEAjax.post(`${curl}/chat/getContactList`, signParms).then(data => {
+							this.friendsList = data.data;
+
+						}).catch(data => {
+							alert("哦豁，出现异常，请刷新重试一下！")
+						});
+					},
+					getUserRole() { //获取用户角色
+						var signParms = {
+							user_id: this.userInfoData.userId
+						};
+						XEAjax.post(`${curl}/user/getRoleByUserId`, signParms).then(data => {
+							var data=data.data;
+							console.log(data);
+							if(data[0].roleId!=undefined&&data[0].roleId==1000){//如果是管理员角色
+							    //显示系统管理菜单
+								this.isShowSysManage=true;
+							}
+					
+						}).catch(data => {
+							// alert("哦豁，获取用户角色出现异常，请刷新重试一下！")
+						});
+					},
+					getUserInfo() { //获取当前登录用户信息并初始化websocket连接
+						var signParms = {
+							user_id: this.userInfoData.userId
+						};
+						XEAjax.post(`${curl}/user/getUser`, signParms).then(data => {
+							var result = data.result;
+							var msg = data.msg;
+							if (result == "SUCCESS") {
+								var userinfo = data.userinfo;
+								this.userInfoData.userId = userinfo.userId;
+								this.userInfoData.userName = userinfo.nickName;
+								if (userinfo.headUrl) {
+									this.userInfoData.userAvatar = userinfo.headUrl;
+								} else {
+									this.userInfoData.userAvatar = "../../static/img/logo_profile.png";
+								}
+								//判断当前浏览器是否支持WebSocket
+								if ('WebSocket' in window) {
+									var wsUrl = wsIm + vm.userInfoData.userId;
+									websocket = new WebSocket(wsUrl);
+								} else {
+									alert('你的浏览器不支持WebSocket')
+								}
+								//连接发生错误的回调方法
+								websocket.onerror = function() {
+									console.log("连接发生错误");
+									vm.$XModal.message({
+										message: "连接发生错误",
+										status: 'warning'
+									})
+								};
+
+								//连接成功建立的回调方法
+								websocket.onopen = function(event) {
+									vm.$XModal.message({
+										message: "成功建立连接",
+										status: 'info'
+									})
+								}
+
+								//接收到消息的回调方法
+								websocket.onmessage = function(event) {
+									var data = event.data;
+									vm.setMessage(data);
+								}
+
+								//连接关闭的回调方法
+								websocket.onclose = function() {
+									console.log("连接关闭");
+									vm.$XModal.message({
+										message: "连接意外关闭,请刷新重试！",
+										status: 'warning'
+									})
+								}
+
+							} else {
+								window.location.href = '../../login.html';
+							}
+						});
+					},
+					getCusMsgLatestOneList() { //获取聊天列表（会话列表）
+						var signParms = {
+							user_id: this.userInfoData.userId,
+							keyword: this.searchValChat
+						};
+						XEAjax.post(`${curl}/chat/getCusMsgLatestOneList`, signParms).then(data => {
+							var data = data.data;
+							this.chatList = data;
+							if (data != [] && data.length > 0) {
+								//默认获取第一条相关数据
+								var obj = data[0];
+								this.chatDetail.nickName = obj.nickName
+								this.chatDetail.headUrl = obj.headUrl
+								this.chatDetail.userChatId = obj.friendId;
+								// this.chatDetail.contentType=obj.contentType;//消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
+								this.chatDetail.firstUnreadCount = obj.unreadcount;
+
+								this.changeChatBackground = 0;
+
+								//获取当前的聊天记录
+								setTimeout(function() {
+									vm.msgList = [];
+									vm.getMessageHis(vm.pageNumber, vm.pageSize, vm.userInfoData.userId,
+										vm.chatDetail.userChatId);
+								}, 2000)
+							}
+
+						}).catch(data => {
+							this.showTipsW("哦豁，出现异常，请刷新重试一下！")
+						});
+					},
+					updateCusMsgLatestOneList() { //更新聊天列表，区别在于这里不取第一条，否则之前选中的值会被改变
+						var signParms = {
+							user_id: this.userInfoData.userId,
+							keyword: this.searchValChat
+						};
+						XEAjax.post(`${curl}/chat/getCusMsgLatestOneList`, signParms).then(data => {
+							var data = data.data;
+							this.chatList = data;
+							//获取当前选中的人的最新未读数
+							if (data != [] && data.length > 0) {
+								for (var i = 0; i < data.length; i++) {
+									var userChatId = data[i].userChatId;
+									if (userChatId == this.chatDetail.userChatId) {
+										this.chatDetail.unreadCount = data[i].unreadcount;
+									}
+								}
+							}
+
+						}).catch(data => {
+							alert("哦豁，出现异常，请刷新重试一下！")
+						});
+					},
+					friendsClick(item, index) { //点击好友列表(通讯录)
+						this.chatDetail.nickName = item.nickName;
+						this.chatDetail.headUrl = item.headUrl;
+						this.chatDetail.userChatId = item.userId;
+
+						//获取当前这个人的聊天记录
+						this.msgList = [];
+						this.pageBtnText = "查看更多消息";
+						this.pageNumber = 1;
+						this.getMessageHis(this.pageNumber, this.pageSize, this.userInfoData.userId, this.chatDetail
+							.userChatId);
+
+						//清空这个人未读消息数
+						this.updateUnreadCount(0);
+					},
+					chatClick(item, index) { //点击聊天列表
+						//先判断一下当前的未读数，因为选中它的时候默认隐藏，这里切换下一个人之前需要清空上一个人未读数
+						if (this.chatDetail.unreadCount > 0) {
+							//清空这个人未读消息数
+							this.updateUnreadCount(0);
+						}
+
+						this.changeChatBackground = index; //控制选中背景颜色的位置；
+						this.chatDetail.nickName = item.nickName;
+						this.chatDetail.headUrl = item.headUrl;
+						this.chatDetail.userChatId = item.friendId;
+						// this.chatDetail.contentType=item.contentType;//消息类型
+
+						//获取当前这个人的聊天记录
+						this.msgList = [];
+						this.pageBtnText = "查看更多消息";
+						this.pageNumber = 1;
+						this.getMessageHis(this.pageNumber, this.pageSize, this.userInfoData.userId, this.chatDetail
+							.userChatId);
+
+						var unreadcount = item.unreadcount;
+						if (unreadcount > 0) {
+							//清空这个人未读消息数
+							this.updateUnreadCount(0);
+						}
+					},
+					sendMsg() { //发送消息
+						if (websocket.readyState == 1) {
+							this.merchantmsg();
+						} else {
+							this.showTipsW("连接已断开，请刷新重试！");
+						}
+						// websocket.send(data);
+					},
+					handelSave(e, type) { //消息输入框回车事件
+						if (e.altKey && e.keyCode === 13) {
+							// 如果是alt+enter 就给文本+换行
+							this.msgContent += '\n'
+						} else {
+							// 如果是enter 就给文本去掉换行
+							this.msgContent = this.msgContent.replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+							// this.msgContent = this.msgContent.substring(0, this.msgContent.lastIndexOf('\n'));
+							//发送消息
+							this.sendMsg();
+						}
+					},
+					setMessage(data) { //收到消息后处理
+						console.log("收到消息：" + data);
+						var obj = JSON.parse(data);
+						var sendUser = obj.sendUser;
+						if (obj.sendUser == this.userInfoData.userId) {
+							//如果返回的数据发送人是当前登录人，则清空输入框
+							this.msgContent = "";
+						}
+						this.msgList = this.msgList.concat(obj);
+						// console.log("总数据：" + JSON.stringify(this.msgList));
+
+						//有新消息就刷新聊天列表
+						setTimeout(function() {
+							vm.updateCusMsgLatestOneList();
+						}, 1000)
+					},
+					merchantmsg() { //调用此接口发起聊天或回复消息
+						var contentType = this.contentType;
+						console.log("发送类型：" + contentType);
+						var msgContent = this.msgContent;
+						var userChatId = this.chatDetail.userChatId;
+						if (userChatId == null || userChatId == "") {
+							this.showTipsW("请选择要发送的好友哟，亲！");
+							return;
+						}
+
+						if (contentType == 1) { //文本
+							if (msgContent == null || msgContent == "") {
+								this.showTipsW("发送内容不能为空哟，亲！");
+								return;
+							}
+							this.picture = null;
+							this.location = null;
+						} else if (contentType == 3) { //图片
+							this.location = null;
+						} else if (contentType == 4) { //位置
+							this.picture = null;
+						}else if (contentType == 5) { //文件
+							this.picture = null;
+							this.location = null;
+						} else {
+							this.showTipsW("未知消息类型，请联系管理员解决！");
+							return;
+						}
+						var para = {
+							"sendUserId": this.userInfoData.userId,
+							"receiverUserId": userChatId,
+							"message": msgContent,
+							"contentType": contentType,
+							"picture": this.picture,
+							"location": this.location,
+							"fileName":this.fileName,
+							"fileDownloadUrl":this.fileDownloadUrl
+						};
+
+						console.log(para)
+						XEAjax.post(`${curl}/chat/merchantmsg`, para).then(data => {
+							var code = data.code;
+							console.log(code)
+							if (code == 200) {
+								var data = data.data;
+								this.fileList = [];
+								this.fileName="";
+								this.fileDownloadUrl="";
+								// console.log(data)
+								// vm.$XModal.message({
+								// 	message: "发送成功",
+								// 	status: 'info'
+								// })
+							} else {
+								this.showTipsW(data.msg);
+							}
+
+						}).catch(data => {
+							alert("发送失败了，请刷新重试一下！")
+						});
+					},
+					updateUnreadCount(unreadCount) { //更新未读消息数
+						var userChatId = this.chatDetail.userChatId;
+						if (userChatId == "") {
+							console.log("还没有获取到好友id")
+							return;
+						}
+						var para = {
+							"user_id": this.userInfoData.userId,
+							"unreadCount": unreadCount,
+							"friend_id": userChatId
+						};
+						XEAjax.post(`${curl}/chat/updateUnreadCount`, para).then(data => {
+							var data = data.data;
+							//更新聊天列表
+							this.updateCusMsgLatestOneList();
+						}).catch(data => {
+							this.showTipsW("哦豁，出现异常，请刷新重试一下！");
+						});
+					},
+					getMessageHis(pageNumber, pageSize, user_id, friend_id) { //获取聊天记录,pageNumber:页数 pageSize：每页条数
+						var para = {
+							"user_id": user_id,
+							"friend_id": friend_id,
+							"pageNumber": pageNumber,
+							"pageSize": pageSize
+						};
+						XEAjax.post(`${curl}/chat/getMessageHis`, para).then(data => {
+							// console.log(data)
+							var list = data.list;
+							for (var i = list.length - 1; i >= 0; i--) {
+								this.msgList.unshift(list[i]);
+							}
+							this.totalPage = data.totalPage;
+							if (this.pageNumber >= this.totalPage) {
+								this.pageBtnText = "没有更多数据了...";
+							}
+							// var pageNumber=data.pageNumber;
+							// var pageSize=data.pageSize;
+							// var totalRow=data.totalRow;
+						}).catch(data => {
+							this.showTipsW("哦豁，出现异常，请刷新重试一下！")
+						});
+					},
+					moreMsg() { //加载更多聊天数据
+						this.flagPosition = 1;
+						console.log("总页数：" + this.totalPage + "页");
+						if (this.pageNumber < this.totalPage) {
+							console.log("当前第：" + this.pageNumber + "页");
+							this.pageNumber++;
+							this.getMessageHis(this.pageNumber, this.pageSize, this.userInfoData.userId, this.chatDetail
+								.userChatId);
+						} else {
+							this.pageBtnText = "没有更多数据了...";
+						}
+					},
+					filePreviewEvent(file) {
+
+					},
+					fileErrorEvent(err, file, fileList) {
+						this.showTipsW("图片发送失败咯，请刷新重试！");
+					},
+					fileProgressEvent(event, file, fileList) {},
+					fileBeforeEvent(file) {},
+					fileRemoveEvent(file, fileList) {
+						if (file.response.code == 200) {
+
+						} else {
+							this.$XModal.message({
+								message: '删除失败',
+								status: 'warning'
+							});
+						}
+					},
+					fileSuccessEvent(res, file, fileList) { //图片上传成功回调
+						console.log(res)
+						if (res.code == 200) {
+							var data = res.data;
+							var original = data.original;
+							var state = data.state;
+							var title = data.title;
+							var url = data.url;
+							var viewUrl = data.viewUrl;
+							
+							if(this.contentType == 3){//发送类型为3图片
+								
+							this.picture = {
+								// "pictureUrl": imgurl + viewUrl,
+								"pictureUrl": curlCos +"/"+ url
+							}
+							} else if(this.contentType == 5){//文件
+								this.fileName=original;
+								this.fileDownloadUrl=url;
+							}
+							this.merchantmsg();
+						} else {
+							this.showTipsW(res.msg);
+						}
+					},
+					fileExceedEvent(file, fileList) {
+						this.showTipsW("最多上传1张图片");
+					},
+					beforeRemove(file, fileList) {
+						return this.$confirm(`确定移除 ${ file.name }？`);
+					},
+					chooseLocation() {
+						// this.contentType = 4; //发送类型置为4位置
+						// this.location = {
+						// 	"longitude": 192.56,
+						// 	"latitude": 158.23,
+						// 	"coordinateType": "bd09ll"
+						// }
+					},
+					closeScreenshot() {
+						this.showModalScreenshot = false;
+					},
+					screentShot() {
+						StartCapture();
+					},
+					sendScreenshot() {
+						// console.log(extendName);
+						// console.log(savedPictureContent);
+						if (savedPictureContent == "") {
+							this.showTipsW("未获取到截图内容，请重试！")
+							return;
+						}
+						var para = {
+							"fileBase64": savedPictureContent,
+							"fileName": "1." + extendName
+						};
+						// XEAjax.post(`${curl}/attach/uploadByBase64`, para).then(data => {
+						XEAjax.post(`${curlCos}/cos/uploadCosByStream`, para).then(data => {
+							console.log(data)
+							var res = data;
+							if (res.code == 200) {
+								this.contentType = 3; //发送类型置为3图片
+								var data = res.data;
+								var original = data.original;
+								var state = data.state;
+								var title = data.title;
+								var url = data.url;
+								var viewUrl = data.viewUrl;
+
+								this.picture = {
+									// "pictureUrl": imgurl + viewUrl,
+									"pictureUrl": curlCos +"/"+ url
+								}
+								this.sendMsg();
+								//关闭截图弹窗
+								this.showModalScreenshot = false;
+							} else {
+								this.showTipsW(res.msg);
+							}
+						}).catch(data => {
+							this.showTipsW("哦豁，出现异常，请刷新重试一下！")
+						});
+					},
+					inputClick() { //选中输入框
+						this.contentType = 1;
+						if (this.chatDetail.unreadCount > 0) {
+							// 	//清空这个客人未读消息数
+							this.updateUnreadCount(0);
+						}
+					},
+					showTipsW(msg) { //弹出警告提示
+						vm.$XModal.message({
+							message: msg,
+							status: 'warning'
+						})
+					},
+					openFriends() {
+						window.open("../addFriends/userList.html?user_id=" + this.userInfoData.userId);
+					},
+					friendsManage(){
+						this.showModalFriendsManage = true;
+					},
+					sysManage(){
+						window.open("../sysManage/userManage.html?user_id=" + this.userInfoData.userId);
+					}
+
+
+				}
+			})
+			//左侧图标
+			window.onload = function() {
+
+				function a() {
+					var si1 = document.getElementById('si_1');
+					var si2 = document.getElementById('si_2');
+					var si3 = document.getElementById('si_3');
+					si1.onclick = function() {
+						si1.style.background = "url(images/icon/head_2_1.png) no-repeat"
+						si2.style.background = "";
+						si3.style.background="";
+						vm.listType = 1;
+						//刷新聊天列表
+						vm.getCusMsgLatestOneList();
+					};
+					si2.onclick = function() {
+						si2.style.background = "url(images/icon/head_3_1.png) no-repeat"
+						si1.style.background = "";
+						si3.style.background="";
+						vm.listType = 0;
+						//刷新通讯录列表
+						vm.getCusList();
+					};
+					si3.onclick = function() {
+						si3.style.background = "url(images/icon/head_4_1.png) no-repeat"
+						si1.style.background = "";
+						si2.style.background = "";
+					};
+				};
+				a();
+			};
+
+			//监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+			window.onbeforeunload = function() {
+				websocket.close();
+			}
+
+			//将消息显示在网页上
+			function setMessageInnerHTML(innerHTML) {
+				// vm.msgContent = innerHTML;
+			}
+
+			//关闭连接
+			function closeWebSocket() {
+				websocket.close();
+			}
+
+			function getUrlParam(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+				var r = window.location.search.substr(1).match(reg); //匹配目标参数
+				if (r != null) {
+					return unescape(r[2]);
+				}
+				return null; //返回参数值
+			}
+		</script>
+	</body>
+</html>

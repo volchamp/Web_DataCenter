@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>即时通讯系统</title>
+		<link href="./css/mui.min.css" rel="stylesheet" />
+		<link href="./css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.13.0/css/all.css">
+		<link rel="stylesheet" href="./lib/element-ui/theme-chalk/index.css">
+		<link rel="stylesheet" href="./lib/vxe-table/index.css">
+		<link rel="stylesheet" href="./lib/vxe-table-plugin-element/style.css">
+		<script type="text/javascript" src="./lib/vue/vue.js"></script>
+		<script type="text/javascript" src="./lib/xe-utils/xe-utils.js"></script>
+		<script type="text/javascript" src="./lib/element-ui/index.js"></script>
+		<script type="text/javascript" src="./lib/vxe-table/index.js"></script>
+		<script type="text/javascript" src="./lib/vxe-table-plugin-element/index.js"></script>
+		<script type="text/javascript" src="./lib/xe-ajax/xe-ajax.min.js"></script>
+		<script type="text/javascript" src="./static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="./static/js/MD5/Base64.js"></script>
+		<script type="text/javascript" src="./static/js/MD5/md5.js"></script>
+		<script type="text/javascript" src="./static/js/webApi.js"></script>
+		<style>
+			body {
+				background-image: url(img/loginbg2.jpg);
+				background-size: cover;
+				background-repeat: no-repeat;
+			}
+
+			#login_box {
+				width: 20%;
+				height: 400px;
+				background: #00000040;
+				margin: auto;
+				margin-top: 10%;
+				text-align: center;
+				border-radius: 10px;
+				padding: 50px 50px;
+			}
+
+			#login_box h2 {
+				/* color: #e8e7b730; */
+				color: #d5d5d5;
+				margin-top: 5%;
+			}
+
+			#login_box #form #input_box {
+				margin-top: 5%;
+			}
+
+			#login_box #form #input_box i {
+				/* color: #e8e7b730; */
+				color: #d5d5d5;
+			}
+
+			#login_box #form #input_box input {
+				border: 0;
+				width: 60%;
+				font-size: 15px;
+				color: #fff;
+				background: #ffffff00;
+				border-bottom: 2px solid#eacda950;
+				padding: 5px 10px;
+				margin-top: 10px;
+			}
+
+			#login_box button {
+				margin-top: 50px;
+				width: 40%;
+				height: 30px;
+				border-radius: 10px;
+				border: 0;
+				color: #fff;
+				font-size: 15px;
+				background-image: linear-gradient(to top, #30324d 0%, #5f6298 100%);
+			}
+
+			#login_box #Sign {
+				margin-top: 45%;
+				margin-left: 60%;
+			}
+
+			#login_box #Sign a {
+				color: #d1c2d8;
+			}
+
+			.register {
+				width: 330px;
+				height: 500px;
+				background: #F9F9F9;
+				box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+				border-radius: 4px;
+				overflow: hidden;
+				position: absolute;
+				right: 50px;
+				top: 100px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="login_box">
+			<!-- 注册 -->
+			<div class="register" v-show="showRegisterModal" style="display: none;">
+				<div style="display: flex;">
+					<div style="flex: 1;"></div>
+					<img @click="closeRegister" src="./img/close.png"
+						style="margin: 6px 12px 3px 0px;height: 20px;width: 20px;" />
+				</div>
+				<div class="mui-content" style="background: white;padding-bottom: 100px;">
+					<div style="margin-bottom: 20px;margin-top: 5px;">
+						<div class="" style="">
+							<input v-model="registInfo.account" type="text" placeholder="请输入账号" class="mui-input-clear"
+								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+						</div>
+						<div class="" style="">
+							<input v-model="registInfo.name" type="text" placeholder="请输入昵称" class="mui-input-clear"
+								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+						</div>
+						<div class="" style="">
+							<input v-model="registInfo.password" type="password" placeholder="请输入登录密码" class="mui-input-clear"
+								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+						</div>
+						<div class="" style="">
+							<input v-model="registInfo.password_confirm" type="password" placeholder="请再次确认密码" class="mui-input-clear"
+								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+						</div>
+	
+						<div style="border-bottom: 1px solid #F2F2F2;margin-top: -15px;"></div>
+
+					</div>
+
+					<div style="display: flex;flex-direction: row;font-size: 15px;">
+						<input id="rd_protocol" type="radio" checked="checked" style="float:left;margin:4px 5px 0px 15px;">
+						<div>同意《
+							<a>用户服务协议</a>》及《
+							<a>隐私权政策</a>》
+						</div>
+					</div>
+
+					<div @click="regist" id='reg'
+						style="height: 50px;border-radius: 25px;margin: 40px 16px 10px 16px;background: cornflowerblue;color: white;text-align: center;padding-top: 15px;">
+						注 册</div>
+
+				</div>
+			</div>
+
+			<h2>登录</h2>
+			<div id="form">
+				<div id="input_box">
+					<i class="fa fa-user" aria-hidden="true"></i>
+					<input class="in" type="text" v-model="formData.user_id" placeholder="请输入账号">
+				</div>
+				<div id="input_box">
+					<i class="fa fa-key" aria-hidden="true"></i>
+					<input class="in" type="passwoprd" v-model="formData.user_pwd" placeholder="请输入密码">
+				</div>
+			</div>
+
+			<button @click="login">登 录</button><br>
+			<div style="float: right;margin-top: 20px;" @click="openRegister">
+				<a disabled="true" style="color: white;">账号注册</a>
+			</div>
+		</div>
+	</body>
+	<script>
+		var vm = new Vue({
+			el: "#login_box",
+			data: {
+				formData: {
+					user_id: "",
+					user_pwd: "",
+					sessionId: ''
+				},
+				showRegisterModal: false,
+				registInfo:{
+					account:"",
+					name:"",
+					password:"",
+					password_confirm:""
+				}
+
+			},
+			methods: {
+				login() {
+					if (this.formData.user_id == "" || this.formData.user_pwd == "") {
+						this.showTipsW("你都没有输入账号密码，还咋个登录!")
+						return;
+					}
+					var signParms = {
+						user_id: this.formData.user_id,
+						user_password: Base64.encode(hex_md5(this.formData.user_pwd).toUpperCase())
+					};
+					//console.info(signParms);
+					XEAjax.post(`${curl}/login/login`, signParms).then(data => {
+						console.log(data)
+						var result = data.result;
+						var msg = data.msg;
+						console.log(result)
+						if (result == "SUCCESS") {
+							this.showTipsI(msg)
+							setCookie("v_token", data.data);
+							setCookie("checked", this.checked);
+							if (this.checked) {
+								setCookie("user_id", this.formData.user_id);
+							}
+							//登录成功
+							window.top.location = "views/im/index.html?user_id=" + this.formData.user_id;
+						} else {
+							this.showTipsW(msg);
+						}
+					});
+				},
+				showTipsS(msg) { //弹出警告提示
+					vm.$XModal.message({
+						message: msg,
+						status: 'success'
+					})
+				},
+				showTipsW(msg) { //弹出警告提示
+					vm.$XModal.message({
+						message: msg,
+						status: 'warning'
+					})
+				},
+				showTipsI(msg) { //弹出普通提示
+					vm.$XModal.message({
+						message: msg,
+						status: 'info'
+					})
+				},
+				openRegister(){
+					if(this.showRegisterModal){
+						this.showRegisterModal=false;
+					}else{
+						this.showRegisterModal=true;
+					}
+				},
+				closeRegister(){
+					this.showRegisterModal=false;
+				},
+				regist(){
+					var account=this.registInfo.account.trim();
+					var nick_name=this.registInfo.name.trim();
+					var password=this.registInfo.password.trim();
+					var password_confirm=this.registInfo.password_confirm.trim();
+					if(account==""){
+						this.showTipsW("请输入账号");
+						return;
+					}
+					if(nick_name==""){
+						this.showTipsW("请输入昵称");
+						return;
+					}
+					if(password==""||password_confirm==""){
+						this.showTipsW("请输入密码");
+						return;
+					}
+					if(password.length<6||password_confirm.length<6){
+						this.showTipsW("密码长度不得小于6位");
+						return;
+					}
+					if(password!=password_confirm){
+						this.showTipsW("两次输入的密码不一致");
+						return;
+					}
+					
+					var signParms = {
+						user_id: account,
+						nick_name:nick_name,
+						user_password: Base64.encode(hex_md5(password).toUpperCase())
+					};
+					XEAjax.post(`${curl}/register/accountRegister`, signParms).then(data => {
+						console.log(data)
+						var code = data.code;
+						var msg = data.msg;
+						console.log(code)
+						if (code == "200") {
+							this.showTipsS("注册成功");
+							this.showRegisterModal=false;
+						} else {
+							this.showTipsW(msg);
+						}
+					});
+					
+				}
+			}
+		})
+	</script>
+</html>

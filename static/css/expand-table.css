@@ -1,0 +1,25 @@
+/*此css为列表展开下的详情table样式*/
+.expand-table{
+	width: 100%;
+	table-layout: auto;
+	border-collapse: collapse;
+}
+.expand-table tr th{
+    background: #f8f8f9;
+}
+.expand-table tr th,
+.expand-table tr td{
+	border: 1px solid #e8eaec;;
+	text-align: center;
+	height: 36px;
+	line-height: 36px;
+}
+.expand-table tr td:nth-child(odd){
+	width: 19%;
+}
+.expand-table tr td:nth-child(even){
+	width: 14%;
+}
+.expand-table tr:nth-child(even) td{
+	background: #f8f8f9;
+}

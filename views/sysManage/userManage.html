@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>用户管理</title>
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../lib/element-ui/theme-chalk/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table-plugin-element/style.css">
+		<link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="../../static/css/expand-table.css" />
+		<link rel="stylesheet" type="text/css" href="../../static/css/common.css">
+		<script type="text/javascript" src="../../lib/vue/vue.js"></script>
+		<script type="text/javascript" src="../../lib/xe-utils/xe-utils.js"></script>
+		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
+		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
+		<script type="text/javascript" src="../../lib/xe-ajax/xe-ajax.js"></script>
+		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../static/js/webApi.js"></script>
+		<script type="text/javascript" src="../../static/js/MD5/Base64.js"></script>
+		<script type="text/javascript" src="../../static/js/MD5/md5.js"></script>
+	</head>
+	<style type="text/css">
+		html,
+		body,
+		#app,
+		.el-container {
+			/*设置内部填充为0，几个布局元素之间没有间距*/
+			padding: 0px;
+			/*外部间距也是如此设置*/
+			margin: 0px;
+			/*统一设置高度为100%*/
+			height: 100%;
+		}
+
+		.el-main {
+			padding: 4px;
+		}
+		.register {
+			width: 330px;
+			height: 380px;
+			background: #F9F9F9;
+			box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+			border-radius: 4px;
+			overflow: hidden;
+			position: absolute;
+			right: 50px;
+			top: 100px;
+			z-index: 9999;
+		}
+	</style>
+
+	<body>
+		<div id="content">
+		<!-- 注册 -->
+		<div class="register" v-show="showRegisterModal">
+<!-- 			<div style="display: flex;">
+				<div style="flex: 1;"></div>
+				<img @click="closeRegister" src="./img/close.png"
+					style="margin: 6px 12px 3px 0px;height: 20px;width: 20px;" />
+			</div> -->
+			<div class="mui-content" style="background: white;padding-bottom: 100px;">
+				<div style="margin-bottom: 20px;margin-top: 5px;">
+					<div class="" style="">
+						<input v-model="registInfo.account" type="text" placeholder="请输入账号" class="mui-input-clear"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+					</div>
+					<div class="" style="">
+						<input v-model="registInfo.name" type="text" placeholder="请输入昵称" class="mui-input-clear"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+					</div>
+					<div class="" style="">
+						<input v-model="registInfo.password" type="password" placeholder="请输入登录密码" class="mui-input-clear"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+					</div>
+					<div class="" style="">
+						<input v-model="registInfo.password_confirm" type="password" placeholder="请再次确认密码" class="mui-input-clear"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+					</div>
+			
+					<div style="border-bottom: 1px solid #F2F2F2;margin-top: -15px;"></div>
+		
+				</div>
+		
+				<div @click="regist" id='reg'
+					style="height: 50px;border-radius: 25px;margin: 40px 16px 10px 16px;background: cornflowerblue;color: white;text-align: center;padding-top: 15px;">
+					添 加</div>
+		
+			</div>
+		</div>
+		
+		<el-container id="app">
+
+			<el-main>
+				<template>
+					<el-form :inline="true" :modle="lock" label-width="100px" label-position="right"
+						style="min-height: 20px;border: 1px solid #e8eaec;padding: 5px;">
+						<el-form-item label="搜索关键字">
+							<el-input v-model="lock.nodeNo" placeholder="支持账号/姓名/手机号关键字查询" style="width: 300px;">
+							</el-input>
+						</el-form-item>
+
+						<el-form-item>
+							<el-button type="primary" icon="el-icon-search" @click="query()">查询</el-button>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" icon="el-icon-search" @click="openRegister()">新增用户</el-button>
+						</el-form-item>
+
+					</el-form>
+				</template>
+
+				<!-- 表格部分 -->
+				<vxe-grid border resizable show-overflow max-height="600" header-align="center" :data="lockList"
+					:toolbar="tableToolbar" @toolbar-button-click="toolbarButtonClickEvent">
+					</vxe-table-column>
+					<vxe-table-column type="seq" width="60" title="序号" fixed="left" headerAlign="center" align="center">
+					</vxe-table-column>
+					<vxe-table-column field="userId" title="账号"></vxe-table-column>
+					<vxe-table-column field="nickName" title="姓名"></vxe-table-column>
+					<vxe-table-column field="userPhone" title="电话"></vxe-table-column>
+					<vxe-table-column field="email" title="邮箱"></vxe-table-column>
+					<vxe-table-column field="sex" :formatter="formatSex" title="性别"></vxe-table-column>
+
+					<vxe-table-column field="caozuo" align="center" width="520" title="操作">
+						<template v-slot="{row}">
+							<vxe-button type="text" content="删除用户" icon="fa fa-hand-pointer-o" @click="unBindLock(row)"
+								title="删除用户" style="color:#3c8ddb;">
+							</vxe-button>
+							<vxe-button type="text" content="查看日志" style="display: none;" icon="fa fa-leanpub"
+								@click="lookLog(row)" title="查看日志" style="color:#3c8ddb;">
+							</vxe-button>
+						</template>
+					</vxe-table-column>
+					<template v-slot:empty>
+						<span style="color: red;">
+							<img style="margin-top: 30px;" src="../../static/img/img1.gif">
+							<p>不用再看了，没有更多数据了！</p>
+						</span>
+					</template>
+				</vxe-grid>
+				<vxe-pager style="background: #f8f8f9;" background size="small" :current-page="currentPage"
+					:page-size="pageSize" :total="totalSize" @size-change="handleSizeChange"
+					@current-change="handleCurrentChange" :page-sizes="[10, 20, 100]"
+					:layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']">
+				</vxe-pager>
+			</el-main>
+
+		</el-container>
+		
+		</div>
+	</body>
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: "#content",
+			data: {
+				showRegisterModal: false,
+				registInfo:{
+					account:"",
+					name:"",
+					password:"",
+					password_confirm:""
+				},
+				userInfoData: { //当前登录人信息
+					userId: null, //当前登录用户账号（userCode）
+					userAvatar: "", //用户头像
+					userName: "", //用户名
+					roleCodes: '' //角色id
+				},
+				lock: {
+					lockStatus: '',
+					houseName: '',
+					houseId: '',
+					roomId: '',
+					roomName: ' ',
+					lockNo: '',
+					nodeNo: ''
+				},
+				logData: [],
+				list: [],
+				lockList: [], //列表
+				guide: false,
+				tableHeight: '100%',
+				tablePage: {
+					perfect: true,
+					total: 0,
+					currentPage: 1,
+					pageSize: 10,
+					align: 'left',
+					pageSizes: [10, 15, 30, 45, 60, 75, 90, 100],
+					layouts: ['Sizes', 'PrevJump', 'PrevPage', 'Number', 'NextPage', 'NextJump', 'FullJump',
+						'Total'
+					],
+				},
+				totalPage: 0,
+				totalSize: 0, //总条数
+				currentPage: 1,
+				pageSize: 10,
+				showModalUnlockHis: false,
+				submitLoading: false,
+				showModalLog: false,
+				operType: "list",
+				totalPageHis: 0,
+				totalSizeHis: 0,
+				currentPageHis: 1,
+				pageSizeHis: 10,
+				pageSizeLog: 10,
+				totalPageLog: 0,
+				totalSizeLog: 0,
+				currentPageLog: 1,
+				loading: false,
+				value: '',
+				lock_no: '',
+				tableToolbar: {
+					state: false,
+					id: 'toolbar',
+					size: 'mizi',
+					perfect: true,
+					buttons: [],
+					refresh: {
+						icon: 'fa fa-refresh',
+						iconLoading: 'fa fa-spinner fa-spin'
+					},
+					zoom: {
+						iconIn: 'fa fa-arrows-alt',
+						iconOut: 'fa fa-expand'
+					},
+					custom: {
+						icon: 'fa fa-cog',
+						storage: true
+					},
+					/* export: {
+					    icon: 'fa fa-share-square-o'
+					} */
+				}
+			},
+			filters: {
+				formatAddr: function(addr) {
+					if (addr == null) {
+						return "";
+					} else {
+						return '地址：' + addr;
+					}
+				}
+			},
+			created() {
+				this.userInfoData.userId = getUrlParam("user_id");
+			},
+			mounted() {},
+			methods: {
+				getUserList() {
+					var result = XEAjax.post(`${curl}/user/getUserList`, {
+						page_size: vm.pageSize,
+						current_page: vm.currentPage,
+						keyword: (vm.lock.nodeNo).replace(/\s*/g, ""),
+					}).then(data => {
+						var code = data.code;
+						var msg = data.msg;
+						if (code == 200) {
+							var data = data.data;
+							var pageNumber = data.pageNumber;
+							var pageSize = data.pageSize;
+							var totalPage = data.totalPage;
+							var totalRow = data.totalRow;
+							var rows = data.rows;
+
+							vm.lockList = [];
+							vm.lockList = rows;
+							vm.totalSize = totalRow;
+							vm.totalPage = totalPage;
+						} else {
+							vm.$XModal.message({
+								message: "哦豁，" + msg + "，请重试哦！",
+								status: 'warning'
+							})
+						}
+					}).catch(data => {
+						vm.$XModal.message({
+							message: "哦豁，出现异常，请刷新重试一下！",
+							status: 'warning'
+						})
+					});
+
+				},
+				remoteMethod(query) {
+					if (query !== '') {
+						this.loading = true;
+						setTimeout(() => {
+							this.loading = false;
+							this.roomTypeList = this.list.filter(item => {
+								return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
+							});
+						}, 200);
+					}
+				},
+				remoteMethod(query) {
+					if (query !== '') {
+						this.loading = true;
+						this.getHouseInfo(query);
+					} else {
+						this.getHouseInfo('');
+					}
+				},
+				selectChange(Command) {
+					//this.getRoomInfo(Command.hId);
+					this.lockModalData.city = Command.city;
+					this.lockModalData.hOutName = Command.hOutName;
+					this.lockModalData.h_id = Command.hId;
+					this.lockModalData.org_id = Command.orgId;
+					this.lockModalData.h_out_id = Command.hOutId;
+				},
+				selectChangeRoom(value) {
+					this.lockModalData.house_no = value;
+				},
+				formatSex({
+					cellValue
+				}) {
+					switch (cellValue) {
+						case 2:
+							return '女';
+							break;
+						case 1:
+							return '男';
+							break;
+					}
+				},
+				convertDate(date) {
+					var d = new Date(date); //传入时间
+					var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1);
+					var day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+					var hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+					var min = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+					var sec = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+					var times = d.getFullYear() + '-' + month + '-' + day + " " + hours + ':' + min + ':' + sec;
+					return times;
+				},
+				unBindLock(row) {
+					var _this = this;
+					if (row.userId == null || row.userId == "") {
+						_this.$XModal.message({
+							message: "获取用户信息失败，请刷新重试",
+							status: 'warning'
+						})
+						return;
+					}
+					this.$XModal.confirm('您确定删除该用户吗？').then(type => {
+						if (type == "confirm") {
+							XEAjax.post(`${curl}/user/deleteUser`, {
+								user_id: row.userId
+							}).then(data => {
+								console.log(data.code)
+								if (data.code == 200) {
+									vm.getUserList();
+									vm.$XModal.message({
+										message: data.msg,
+										status: 'success'
+									})
+								} else {
+									vm.$XModal.message({
+										message: data.msg,
+										status: 'warning'
+									})
+								}
+							})
+						}
+					})
+				},
+				toolbarButtonClickEvent({
+					code
+				}, event) { //表格工具栏事件
+					switch (code) {
+						case 'repair':
+							this.repair();
+							break;
+						case 'bindLock':
+							this.bindLock();
+							break;
+					}
+				},
+				goDealTask(dataUrl, menuName) {},
+				handleSizeChangeHis(val) {
+					this.pageSizeHis = val;
+					this.unlockHis(vm.lockNoHis)
+				},
+				handleCurrentChangeHis(val) {
+					this.currentPageHis = val;
+					this.unlockHis(vm.lockNoHis)
+				},
+				formatTime({
+					cellValue
+				}) {
+					return XEUtils.toDateString(cellValue, 'yyyy-MM-dd HH:mm:ss');
+				},
+				remoteOpenLock(row) {
+					var lock_no = row.lockNo;
+					this.remoteData.lockNoRemote = lock_no;
+					this.showModalRemote = true;
+				},
+				lookLog(row) {
+					this.showModalLog = true;
+					this.getLockLog(row.lockNo);
+				},
+				query() {
+					vm.currentPage = 1;
+					this.getUserList();
+				},
+				bindLock() {
+					this.showModallock = true;
+				},
+				repair() {
+					this.guide = true;
+				},
+				handleSizeChange(val) {
+					this.pageSize = val;
+					this.getUserList();
+				},
+				handleCurrentChange(val) {
+					this.currentPage = val;
+					this.getUserList();
+				},
+				handleSizeChangeLog(val) {
+					this.pageSizeLog = val;
+					this.getLockLog(this.lock_no);
+				},
+				handleCurrentChangeLog(val) {
+					this.currentPageLog = val;
+					this.getLockLog(this.lock_no);
+				},
+				showTipsS(msg) { //弹出警告提示
+					vm.$XModal.message({
+						message: msg,
+						status: 'success'
+					})
+				},
+				showTipsW(msg) { //弹出警告提示
+					vm.$XModal.message({
+						message: msg,
+						status: 'warning'
+					})
+				},
+				showTipsI(msg) { //弹出普通提示
+					vm.$XModal.message({
+						message: msg,
+						status: 'info'
+					})
+				},
+				openRegister(){
+					if(this.showRegisterModal){
+						this.showRegisterModal=false;
+					}else{
+						this.showRegisterModal=true;
+					}
+				},
+				closeRegister(){
+					this.showRegisterModal=false;
+				},
+				regist(){
+					var account=this.registInfo.account.trim();
+					var nick_name=this.registInfo.name.trim();
+					var password=this.registInfo.password.trim();
+					var password_confirm=this.registInfo.password_confirm.trim();
+					if(account==""){
+						this.showTipsW("请输入账号");
+						return;
+					}
+					if(nick_name==""){
+						this.showTipsW("请输入昵称");
+						return;
+					}
+					if(password==""||password_confirm==""){
+						this.showTipsW("请输入密码");
+						return;
+					}
+					if(password.length<6||password_confirm.length<6){
+						this.showTipsW("密码长度不得小于6位");
+						return;
+					}
+					if(password!=password_confirm){
+						this.showTipsW("两次输入的密码不一致");
+						return;
+					}
+					
+					var signParms = {
+						user_id: account,
+						nick_name:nick_name,
+						user_password: Base64.encode(hex_md5(password).toUpperCase())
+					};
+					XEAjax.post(`${curl}/register/accountRegister`, signParms).then(data => {
+						console.log(data)
+						var code = data.code;
+						var msg = data.msg;
+						console.log(code)
+						if (code == "200") {
+							this.showTipsS("添加成功");
+							this.showRegisterModal=false;
+							vm.getUserList();
+						} else {
+							this.showTipsW(msg);
+						}
+					});
+					
+				}
+			}
+		})
+		window.onload = function() {
+			vm.getUserList();
+		}
+
+		function dateTrans(date) {
+			let _date = new Date(parseInt(date));
+			let y = _date.getFullYear();
+			let m = _date.getMonth() + 1;
+			m = m < 10 ? ('0' + m) : m;
+			let d = _date.getDate();
+			d = d < 10 ? ('0' + d) : d;
+			let h = _date.getHours();
+			h = h < 10 ? ('0' + h) : h;
+			let minute = _date.getMinutes();
+			let second = _date.getSeconds();
+			minute = minute < 10 ? ('0' + minute) : minute;
+			second = second < 10 ? ('0' + second) : second;
+			// console.log( y + '-' + m + '-' + d + ' ' + '　' + h + ':' + minute + ':' + second)
+			let dates = y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+
+			return dates;
+		}
+
+		function getUrlParam(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+			var r = window.location.search.substr(1).match(reg); //匹配目标参数
+			if (r != null) {
+				return unescape(r[2]);
+			}
+			return null; //返回参数值
+		}
+	</script>
+
+</html>
