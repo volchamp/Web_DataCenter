@@ -169,8 +169,8 @@
 			el: "#login_box",
 			data: {
 				formData: {
-					user_id: "",
-					user_pwd: "",
+					user_id: "yxc",
+					user_pwd: "123456",
 					sessionId: ''
 				},
 				showRegisterModal: false,
@@ -206,7 +206,7 @@
 								setCookie("user_id", this.formData.user_id);
 							}
 							//登录成功
-							window.top.location = "views/im/index.html?user_id=" + this.formData.user_id;
+							window.top.location = "views/im/index.html";
 						} else {
 							this.showTipsW(msg);
 						}

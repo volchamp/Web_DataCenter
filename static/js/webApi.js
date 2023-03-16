@@ -23,7 +23,7 @@ function webApi(method, postType,parameter, fnSuccess, fnError, async) {
 		url: url,
 		cache:false,
 		beforeSend: function(XMLHttpRequest) {
-			XMLHttpRequest.setRequestHeader("token", getCookie("V_TOKEN"));
+			XMLHttpRequest.setRequestHeader("v_token", getCookie("V_TOKEN"));
 		},
 		crossDomain: true == !(document.all),
 		xhrFields: {

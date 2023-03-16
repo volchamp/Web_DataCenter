@@ -607,7 +607,6 @@
 					}
 				},
 				created() { //页面加载起始
-					this.userInfoData.userId = getUrlParam("user_id");
 
 					this.getUserInfo();
 					this.getUserRole();
@@ -726,7 +725,7 @@
 					},
 					getUserRole() { //获取用户角色
 						var signParms = {
-							user_id: this.userInfoData.userId
+							// user_id: this.userInfoData.userId
 						};
 						XEAjax.post(`${curl}/user/getRoleByUserId`, signParms).then(data => {
 							var data=data.data;
@@ -742,7 +741,7 @@
 					},
 					getUserInfo() { //获取当前登录用户信息并初始化websocket连接
 						var signParms = {
-							user_id: this.userInfoData.userId
+							// user_id: this.userInfoData.userId
 						};
 						XEAjax.post(`${curl}/user/getUser`, signParms).then(data => {
 							var result = data.result;
@@ -1220,6 +1219,7 @@
 				websocket.close();
 			}
 
+            //从url中取参数，问号传值的
 			function getUrlParam(name) {
 				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
 				var r = window.location.search.substr(1).match(reg); //匹配目标参数
