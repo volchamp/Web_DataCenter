@@ -45,6 +45,8 @@ function PluginLoadedCallback(success)
 {
     if(success)
     {
+		console.log("控件成功加载后回调的的函数");
+		vm.showModalNiuNiuInfo=false;
 		$('#info').html('');
         $('#imgshow').hide();
 	    $('#imgshow').attr('src', "./image/loading.gif?v=1");
@@ -56,6 +58,8 @@ function PluginLoadedCallback(success)
 //根据是否是Chrome新版本来控制下载不同的控件安装包
 function ShowDownLoad()
 {
+	//显示牛牛截图信息框
+	vm.showModalNiuNiuInfo=true;
     $('#info').html('如果超过5秒无响应，请点此<a target="_blank" href="' + downloadUrl + '" + date.getMinutes() + date.getSeconds()">安装</a>');
 }
 
@@ -72,6 +76,7 @@ function ReloadPlugin()
      {
         $('#downloadNotice').hide();
         $('#info').html("截图控件已经安装完毕，您可以进行截图了。");
+		console.log("截图控件已经安装完毕，您可以进行截图了。");
      }
      else
      {
@@ -89,7 +94,7 @@ function StartCapture()
 {
     
     $('#imgshow').hide();  
-	$('#imgshow').attr('src', "./image/loading.gif?v=1");
+	// $('#imgshow').attr('src', "./image/loading.gif?v=1");
     var captureRet = Capture();
     //从返回值来解析显示  	
     if(captureRet == emCaptureFailed)
@@ -97,7 +102,10 @@ function StartCapture()
         ShowDownLoad();
     }
 	else if(captureRet == emCaptureUnknown){
+		//显示牛牛截图信息框
+		vm.showModalNiuNiuInfo=true;
 		$('#info').html('正在截图中, 如果超过5秒无响应，请点此<a target="_blank" href="' + downloadUrl + '" + date.getMinutes() + date.getSeconds()">安装</a>');
+	    console.log("正在截图中, 如果超过5秒无响应，请点此安装");
 	}
 }
 

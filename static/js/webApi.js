@@ -4,9 +4,7 @@ var imgurl ='http://127.0.0.1:80/files/';//文件访问路径
 var curl="http://127.0.0.1:8088/api-im";
 var wsIm="ws://127.0.0.1:8088/api-im/websocket/";
 
-var curlCos="http://127.0.0.1:8100/cosapi";
-// var curlCos="http://10.124.9.216:8100/cosapi";
-// var curlCos="http://10.124.13.96/cosapi";
+// var curlCos="http://127.0.0.1:8100/cosapi";
 
 function webApi(method, postType,parameter, fnSuccess, fnError, async) {
 	var url = curl + method; //地址

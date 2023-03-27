@@ -182,7 +182,7 @@
 				}
 			},
 			created() {
-				this.userInfoData.userId = getUrlParam("user_id");
+				// this.userInfoData.userId = getUrlParam("user_id");
 			},
 			mounted() {
 			},
@@ -211,7 +211,7 @@
 							vm.$XModal.message({
 								message: "哦豁，" + msg + "，请重试哦！",
 								status: 'warning'
-							})
+							});
 						}
 					}).catch(data => {
 						vm.$XModal.message({
@@ -275,18 +275,17 @@
 				},
 				unBindLock(row) {
 					var _this = this;
-					var user_id = this.userInfoData.userId;
-					if (user_id == null || user_id == "") {
-						_this.$XModal.message({
-							message: "获取用户信息失败，请刷新重试",
-							status: 'warning'
-						})
-						return;
-					}
+					// var user_id = this.userInfoData.userId;
+					// if (user_id == null || user_id == "") {
+					// 	_this.$XModal.message({
+					// 		message: "获取用户信息失败，请刷新重试",
+					// 		status: 'warning'
+					// 	})
+					// 	return;
+					// }
 					this.$XModal.confirm('您确定添加他为好友吗？').then(type => {
 						if (type == "confirm") {
 							XEAjax.post(`${curl}/user/addUser`, {
-								user_id: this.userInfoData.userId,
 								friend_id: row.userId
 							}).then(data => {
 								if (data.code == 200) {

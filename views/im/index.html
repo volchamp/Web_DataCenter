@@ -155,41 +155,56 @@
 				bottom: 23px;
 				z-index: 999;
 			}
+			
+			.niuniuinfo {
+				width: 330px;
+				height: 100px;
+				background: #F6FAFD;
+				box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+				border: 1px solid #3C8DDB;
+				border-radius: 4px;
+				overflow: hidden;
+				position: absolute;
+				right: 45%;
+				bottom: 200px;
+				z-index: 1001;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="box" id="app">
 			<div class="wechat">
 				<template>
-				    <!-- 好友管理模态框 -->
-				    <vxe-modal ref="xModal" v-model="showModalFriendsManage" title="好友管理" style="z-index: 9999;"
-				        width="1000" :loading="submitLoading" resize destroy-on-close>
-				        <vxe-table stripe highlight-current-row highlight-hover-row :data="friendsList">
+					<!-- 好友管理模态框 -->
+					<vxe-modal ref="xModal" v-model="showModalFriendsManage" title="好友管理" style="z-index: 9999;"
+						width="1000" :loading="submitLoading" resize destroy-on-close>
+						<vxe-table stripe highlight-current-row highlight-hover-row :data="friendsList">
 							<vxe-table-column field="userId" title="账号"></vxe-table-column>
-				            <vxe-table-column field="nickName" title="姓名"></vxe-table-column>
+							<vxe-table-column field="nickName" title="姓名"></vxe-table-column>
 							<vxe-table-column field="userPhone" title="电话"></vxe-table-column>
-				            <vxe-table-column field="email" title="邮箱"></vxe-table-column>
-				            <vxe-table-column field="sex" :formatter="formatSex" title="性别"></vxe-table-column>
-							 <vxe-table-column field="createTime" :formatter="formatTime" title="添加好友时间"></vxe-table-column>
-							
+							<vxe-table-column field="email" title="邮箱"></vxe-table-column>
+							<vxe-table-column field="sex" :formatter="formatSex" title="性别"></vxe-table-column>
+							<vxe-table-column field="createTime" :formatter="formatTime"
+								title="添加好友时间"></vxe-table-column>
+
 							<vxe-table-column field="caozuo" align="center" width="200" title="操作">
-							    <template v-slot="{row}">
-							        <vxe-button type="text" content="删除好友" icon="fa fa-cog" @click="deleteFriend(row)" title="删除好友"
-							            style="color:#3c8ddb;">
-							        </vxe-button>
-							        <vxe-button type="text" content="拉黑" icon="fa fa-hand-pointer-o" @click="blockFriend(row)"
-							            title="拉黑" style="color:#3c8ddb;">
-							        </vxe-button>
-							    </template>
+								<template v-slot="{row}">
+									<vxe-button type="text" content="删除好友" icon="fa fa-cog" @click="deleteFriend(row)"
+										title="删除好友" style="color:#3c8ddb;">
+									</vxe-button>
+									<vxe-button type="text" content="拉黑" icon="fa fa-hand-pointer-o"
+										@click="blockFriend(row)" title="拉黑" style="color:#3c8ddb;">
+									</vxe-button>
+								</template>
 							</vxe-table-column>
-				        </vxe-table>
-<!-- 				        <div class="block" style="margin-top: 10px;">
+						</vxe-table>
+						<!-- 				        <div class="block" style="margin-top: 10px;">
 				            <el-pagination @size-change="handleSizeChangeHis" @current-change="handleCurrentChangeHis"
 				                :current-page="currentPageHis" :page-sizes="[10, 20, 30, 40]" :page-size="pageSizeHis"
 				                layout="total, sizes, prev, pager, next, jumper" :total="totalSizeHis">
 				            </el-pagination>
 				        </div> -->
-				    </vxe-modal>
+					</vxe-modal>
 				</template>
 
 				<template>
@@ -209,6 +224,19 @@
 								<button id="sendScreenshot" @click="sendScreenshot">发送截图</button>
 							</div>
 						</div>
+					</div>
+				</template>
+				<template>
+					<!-- 牛牛截图信息窗口 -->
+					<div v-show="showModalNiuNiuInfo" class="niuniuinfo">
+						<div style="display: flex;">
+							<div style="flex: 1;"></div>
+							<img @click="closeNiuNiuInfo" src="images/close2.png"
+								style="margin: 3px 6px 0px 0px;height: 20px;width: 20px;cursor: pointer;" />
+							<!-- <div id="closeImg" @click="closeNiuNiuInfo"
+								style="margin: 6px 6px 0px 0px;height: 20px;width: 20px;cursor: pointer;"></div> -->
+						</div>
+						<div id="info" style="padding: 10px;font-size: 14px;"></div>
 					</div>
 				</template>
 
@@ -417,13 +445,14 @@
 								<!-- 文件 -->
 								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
 									<div style="flex: 1;"></div>
-									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;" @click="fileDld(item.fileDownloadUrl)">
+									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;"
+										@click="fileDld(item.fileDownloadUrl)">
 										<div style="display: flex;text-align: center;">
 											<div style="font-size: 16px;margin-right: 8px;">{{item.fileName}}</div>
 											<img src="./images/file.png" />
 										</div>
 										<div style="height: 1px;background-color: #f1f1f1;margin-top: 10px;"></div>
-										<div style="color: lightgray;margin-top: 2px;">平生电脑版即时通讯，点击可下载</div>
+										<div style="color: lightgray;margin-top: 2px;">点击可下载</div>
 									</div>
 									<div>
 										<img class="userAvatar" :src="userInfoData.userAvatar"
@@ -457,7 +486,8 @@
 								<!-- 文件 -->
 								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
 									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
-									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;" @click="fileDld(item.fileDownloadUrl)">
+									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;"
+										@click="fileDld(item.fileDownloadUrl)">
 										<div style="display: flex;text-align: center;">
 											<div style="font-size: 16px;margin-right: 8px;">{{item.fileName}}</div>
 											<img src="./images/file.png" />
@@ -535,6 +565,7 @@
 			var vm = new Vue({
 				el: "#app",
 				data: {
+					showModalNiuNiuInfo: false, //是否显示牛牛截图提示窗口
 					userInfoData: { //当前登录人信息
 						userId: null, //当前登录用户账号
 						userAvatar: "", //用户头像
@@ -570,12 +601,12 @@
 					fileList: [], //上传之后返回的文件路径列表
 					uploadPort: curl + '/attach/uploadAtt', //图片上传接口
 					// uploadPort: curlCos + '/cos/tencentCosUpload', //图片上传接口cos
-					showModalScreenshot: false ,//是否显示截图发送窗口
-					showModalFriendsManage:false ,//是否显示好友管理模态框
+					showModalScreenshot: false, //是否显示截图发送窗口
+					showModalFriendsManage: false, //是否显示好友管理模态框
 					submitLoading: false,
-					isShowSysManage:false,//是否显示系统管理菜单
-					fileName:"",//文件名称
-					fileDownloadUrl:""//文件下载地址
+					isShowSysManage: false, //是否显示系统管理菜单
+					fileName: "", //文件名称
+					fileDownloadUrl: "" //文件下载地址
 				},
 				filters: {
 					//局部过滤器
@@ -650,58 +681,62 @@
 					}
 				},
 				methods: {
-					fileClick(){
-						this.contentType=5;
+					fileClick() {
+						this.contentType = 5;
 					},
-					imgClick(){
-						this.contentType=3;
+					imgClick() {
+						this.contentType = 3;
 					},
-					fileDld(fileDownloadUrl){//文件下载
-						window.location.href=fileDownloadUrl;
+					fileDld(fileDownloadUrl) { //文件下载
+						window.location.href = fileDownloadUrl;
 					},
-					formatTime({cellValue}){
+					formatTime({
+						cellValue
+					}) {
 						return XEUtils.toDateString(cellValue, 'yyyy-MM-dd HH:mm:ss');
 					},
-					formatSex({cellValue}){
-						switch(cellValue){
+					formatSex({
+						cellValue
+					}) {
+						switch (cellValue) {
 							case 1:
-							return "男";
-							break;
+								return "男";
+								break;
 							case 2:
-							return "女";
-							break;
+								return "女";
+								break;
 						}
 					},
-					deleteFriend(row){
+					deleteFriend(row) {
 						//好友id
-						var friendId=row.userId;
+						var friendId = row.userId;
 						//登录人id
-						var user_id=this.userInfoData.userId;
-						if(friendId==null||friendId==""){
+						// var user_id = this.userInfoData.userId;
+						if (friendId == null || friendId == "") {
 							this.showTipsW("未获取到好友id，请刷新重试");
 							return;
 						}
 						var para = {
-							user_id: user_id,
+							// user_id: user_id,
 							friend_id: friendId
 						};
 						// this.$XModal.confirm('您确定删除该好友吗？').then(type => {
 						// 	if (type == "confirm") {
-								XEAjax.post(`${curl}/user/deleteFriend`, para).then(data => {
-									vm.showTipsW(data.msg);
-									vm.getCusList();
-									// if (data.code == "200") {
-										// vm.showTipsS(data.msg);
-										// this.showModalFriendsManage=false;
-									// } else {
-									// 	vm.showTipsW(data.msg);
-									// }
-								})
+						XEAjax.post(`${curl}/user/deleteFriend`, para).then(data => {
+							vm.showTipsW(data.msg);
+							vm.getCusList();
+							// if (data.code == "200") {
+							// vm.showTipsS(data.msg);
+							// this.showModalFriendsManage=false;
+							// } else {
+							// 	vm.showTipsW(data.msg);
+							// }
+						})
 						// 	}
 						// })
-						
-					},//删除好友
-					blockFriend(row){},//拉黑
+
+					}, //删除好友
+					blockFriend(row) {}, //拉黑
 					isToday(date) { //判断时间是否是今天
 						var d = new Date(date.toString().replace(/-/g, "/"));
 						var todaysDate = new Date();
@@ -713,7 +748,7 @@
 					},
 					getCusList() { //通讯录
 						var signParms = {
-							user_id: this.userInfoData.userId,
+							// user_id: this.userInfoData.userId,
 							keyword: this.searchValFriends
 						};
 						XEAjax.post(`${curl}/chat/getContactList`, signParms).then(data => {
@@ -728,13 +763,13 @@
 							// user_id: this.userInfoData.userId
 						};
 						XEAjax.post(`${curl}/user/getRoleByUserId`, signParms).then(data => {
-							var data=data.data;
+							var data = data.data;
 							console.log(data);
-							if(data[0].roleId!=undefined&&data[0].roleId==1000){//如果是管理员角色
-							    //显示系统管理菜单
-								this.isShowSysManage=true;
+							if (data[0].roleId != undefined && data[0].roleId == 1000) { //如果是管理员角色
+								//显示系统管理菜单
+								this.isShowSysManage = true;
 							}
-					
+
 						}).catch(data => {
 							// alert("哦豁，获取用户角色出现异常，请刷新重试一下！")
 						});
@@ -795,13 +830,19 @@
 								}
 
 							} else {
-								window.location.href = '../../login.html';
+								vm.$XModal.message({
+									message: msg,
+									status: 'warning'
+								})
+								if (msg.indexOf("重新登录") != -1) {
+									//回到登录页
+									window.location.href = '../../login.html';
+								}
 							}
 						});
 					},
 					getCusMsgLatestOneList() { //获取聊天列表（会话列表）
 						var signParms = {
-							user_id: this.userInfoData.userId,
 							keyword: this.searchValChat
 						};
 						XEAjax.post(`${curl}/chat/getCusMsgLatestOneList`, signParms).then(data => {
@@ -832,7 +873,6 @@
 					},
 					updateCusMsgLatestOneList() { //更新聊天列表，区别在于这里不取第一条，否则之前选中的值会被改变
 						var signParms = {
-							user_id: this.userInfoData.userId,
 							keyword: this.searchValChat
 						};
 						XEAjax.post(`${curl}/chat/getCusMsgLatestOneList`, signParms).then(data => {
@@ -950,7 +990,7 @@
 							this.location = null;
 						} else if (contentType == 4) { //位置
 							this.picture = null;
-						}else if (contentType == 5) { //文件
+						} else if (contentType == 5) { //文件
 							this.picture = null;
 							this.location = null;
 						} else {
@@ -964,8 +1004,8 @@
 							"contentType": contentType,
 							"picture": this.picture,
 							"location": this.location,
-							"fileName":this.fileName,
-							"fileDownloadUrl":this.fileDownloadUrl
+							"fileName": this.fileName,
+							"fileDownloadUrl": this.fileDownloadUrl
 						};
 
 						console.log(para)
@@ -975,8 +1015,8 @@
 							if (code == 200) {
 								var data = data.data;
 								this.fileList = [];
-								this.fileName="";
-								this.fileDownloadUrl="";
+								this.fileName = "";
+								this.fileDownloadUrl = "";
 								// console.log(data)
 								// vm.$XModal.message({
 								// 	message: "发送成功",
@@ -1011,7 +1051,7 @@
 					},
 					getMessageHis(pageNumber, pageSize, user_id, friend_id) { //获取聊天记录,pageNumber:页数 pageSize：每页条数
 						var para = {
-							"user_id": user_id,
+							// "user_id": user_id,
 							"friend_id": friend_id,
 							"pageNumber": pageNumber,
 							"pageSize": pageSize
@@ -1072,16 +1112,16 @@
 							var title = data.title;
 							var url = data.url;
 							var viewUrl = data.viewUrl;
-							
-							if(this.contentType == 3){//发送类型为3图片
-								
-							this.picture = {
-								"pictureUrl": imgurl + viewUrl,
-								// "pictureUrl": curlCos +"/"+ url
-							}
-							} else if(this.contentType == 5){//文件
-								this.fileName=original;
-								this.fileDownloadUrl=url;
+
+							if (this.contentType == 3) { //发送类型为3图片
+
+								this.picture = {
+									"pictureUrl": imgurl + viewUrl,
+									// "pictureUrl": curlCos +"/"+ url
+								}
+							} else if (this.contentType == 5) { //文件
+								this.fileName = original;
+								this.fileDownloadUrl = url;
 							}
 							this.merchantmsg();
 						} else {
@@ -1105,6 +1145,9 @@
 					closeScreenshot() {
 						this.showModalScreenshot = false;
 					},
+					closeNiuNiuInfo: function() {
+						this.showModalNiuNiuInfo = false;
+					},
 					screentShot() {
 						StartCapture();
 					},
@@ -1120,7 +1163,7 @@
 							"fileName": "1." + extendName
 						};
 						XEAjax.post(`${curl}/attach/uploadByBase64`, para).then(data => {
-						// XEAjax.post(`${curlCos}/cos/uploadCosByStream`, para).then(data => {
+							// XEAjax.post(`${curlCos}/cos/uploadCosByStream`, para).then(data => {
 							console.log(data)
 							var res = data;
 							if (res.code == 200) {
@@ -1160,13 +1203,13 @@
 						})
 					},
 					openFriends() {
-						window.open("../addFriends/userList.html?user_id=" + this.userInfoData.userId);
+						window.open("../addFriends/userList.html");
 					},
-					friendsManage(){
+					friendsManage() {
 						this.showModalFriendsManage = true;
 					},
-					sysManage(){
-						window.open("../sysManage/userManage.html?user_id=" + this.userInfoData.userId);
+					sysManage() {
+						window.open("../sysManage/userManage.html");
 					}
 
 
@@ -1182,7 +1225,7 @@
 					si1.onclick = function() {
 						si1.style.background = "url(images/icon/head_2_1.png) no-repeat"
 						si2.style.background = "";
-						si3.style.background="";
+						si3.style.background = "";
 						vm.listType = 1;
 						//刷新聊天列表
 						vm.getCusMsgLatestOneList();
@@ -1190,7 +1233,7 @@
 					si2.onclick = function() {
 						si2.style.background = "url(images/icon/head_3_1.png) no-repeat"
 						si1.style.background = "";
-						si3.style.background="";
+						si3.style.background = "";
 						vm.listType = 0;
 						//刷新通讯录列表
 						vm.getCusList();
@@ -1219,7 +1262,7 @@
 				websocket.close();
 			}
 
-            //从url中取参数，问号传值的
+			//从url中取参数，问号传值的
 			function getUrlParam(name) {
 				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
 				var r = window.location.search.substr(1).match(reg); //匹配目标参数
