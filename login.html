@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>即时通讯系统</title>
+		<title>超超飞书</title>
 		<link href="./css/mui.min.css" rel="stylesheet" />
 		<link href="./css/style.css" rel="stylesheet" />
 		<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.13.0/css/all.css">
@@ -106,9 +106,9 @@
 				<div style="display: flex;">
 					<div style="flex: 1;"></div>
 					<img @click="closeRegister" src="./img/close.png"
-						style="margin: 6px 12px 3px 0px;height: 20px;width: 20px;" />
+						style="margin: 6px 12px 3px 0px;height: 20px;width: 20px;cursor: pointer;" />
 				</div>
-				<div class="mui-content" style="background: white;padding-bottom: 100px;">
+				<div class="mui-content" style="background: white;padding-bottom: cursor: pointer;100px;">
 					<div style="margin-bottom: 20px;margin-top: 5px;">
 						<div class="" style="">
 							<input v-model="registInfo.account" type="text" placeholder="请输入账号" class="mui-input-clear"
@@ -140,7 +140,7 @@
 					</div>
 
 					<div @click="regist" id='reg'
-						style="height: 50px;border-radius: 25px;margin: 40px 16px 10px 16px;background: cornflowerblue;color: white;text-align: center;padding-top: 15px;">
+						style="height: 50px;border-radius: 25px;margin: 40px 16px 10px 16px;background: cornflowerblue;color: white;text-align: center;padding-top: 15px;cursor: pointer;">
 						注 册</div>
 
 				</div>
@@ -159,7 +159,7 @@
 			</div>
 
 			<button @click="login">登 录</button><br>
-			<div style="float: right;margin-top: 20px;" @click="openRegister">
+			<div style="float: right;margin-top: 20px;cursor: pointer;" @click="openRegister">
 				<a disabled="true" style="color: white;">账号注册</a>
 			</div>
 		</div>
@@ -170,7 +170,7 @@
 			data: {
 				formData: {
 					user_id: "",
-					user_pwd: "123456",
+					user_pwd: "",
 					sessionId: ''
 				},
 				showRegisterModal: false,

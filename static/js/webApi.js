@@ -1,8 +1,29 @@
 var curlFinance="";
+var urlpath=window.location.href.split("://")[1];
+ip=urlpath.split(":")[0];
+
 var imgurl ='http://127.0.0.1:80/files/';//文件访问路径
 // 地址
 var curl="http://127.0.0.1:8088/api-im";
 var wsIm="ws://127.0.0.1:8088/api-im/websocket/";
+
+if(urlpath.indexOf("127.0.0.1")>-1)
+{
+	// ip="124.222.4.40";
+	// ip="127.0.0.1";
+	imgurl ='http://'+ip+':80/files/';//文件访问路径
+	// 地址
+	curl='http://'+ip+':8088/api-im';
+	wsIm='ws://'+ip+':8088/api-im/websocket/';
+}
+else
+{
+	imgurl ='http://'+ip+':80/files/';//文件访问路径
+	// 地址
+	curl='http://'+ip+':8088/api-im';
+	wsIm='ws://'+ip+':8088/api-im/websocket/';
+}
+
 
 // var curlCos="http://127.0.0.1:8100/cosapi";
 
