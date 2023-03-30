@@ -18,7 +18,7 @@ if(urlpath.indexOf("127.0.0.1")>-1)
 }
 else
 {
-	imgurl ='http://'+ip+':80/files/';//文件访问路径
+	imgurl ='http://'+ip+':8091/';//文件访问路径
 	// 地址
 	curl='http://'+ip+':8088/api-im';
 	wsIm='ws://'+ip+':8088/api-im/websocket/';

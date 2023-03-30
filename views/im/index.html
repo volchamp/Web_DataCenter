@@ -1116,7 +1116,7 @@
 							if (this.contentType == 3) { //发送类型为3图片
 
 								this.picture = {
-									"pictureUrl": imgurl + viewUrl,
+									"pictureUrl": viewUrl,
 									// "pictureUrl": curlCos +"/"+ url
 								}
 							} else if (this.contentType == 5) { //文件
@@ -1176,8 +1176,7 @@
 								var viewUrl = data.viewUrl;
 
 								this.picture = {
-									"pictureUrl": imgurl + viewUrl,
-									// "pictureUrl": curlCos +"/"+ url
+									"pictureUrl": viewUrl,
 								}
 								this.sendMsg();
 								//关闭截图弹窗
