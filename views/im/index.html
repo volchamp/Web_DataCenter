@@ -309,7 +309,7 @@
 						<ul class="user_list">
 							<div v-for="(item,index) in chatList">
 								<li :class="{user_active:changeChatBackground==index}" @click="chatClick(item,index)">
-									<el-badge v-if="item.userChatId!=chatDetail.userChatId&&item.unreadcount!=0"
+									<el-badge v-if="item.friendId!=chatDetail.friendId&&item.unreadcount!=0"
 										:value="item.unreadcount" :max="99" class="item" style="float: left;">
 										<div class="user_head">
 											<img :src="item.headUrl" />
@@ -414,7 +414,7 @@
 						<ul style="width: 100%;height: 100%; overflow:auto;" id="chatContentList">
 							<li style="text-align: center;" @click="moreMsg"><a>{{pageBtnText}}</a></li>
 							<li v-for="item in msgList"
-								v-if="item.sendUser==userInfoData.userId&&item.receiver==chatDetail.userChatId"
+								v-if="item.sendUser==userInfoData.userId&&item.receiver==chatDetail.friendId"
 								class="me" style="width: 100%;">
 								<!-- 发送时间 -->
 								<div style="text-align: center;margin: 5px 0px 10px 0px;font-size: 12px;color: white;">
@@ -463,7 +463,7 @@
 									</div>
 								</div>
 							</li>
-							<li v-else-if="item.sendUser==chatDetail.userChatId" class="other" style="width: 100%;">
+							<li v-else-if="item.sendUser==chatDetail.friendId" class="other" style="width: 100%;">
 								<!-- 发送时间 -->
 								<div style="text-align: center;margin: 5px 0px 10px 0px;font-size: 12px;color: white;">
 									<div
@@ -575,17 +575,17 @@
 						userName: "" //用户名
 					},
 					friendsList: [], //通讯录列表
-					chatList: [], //聊天人列表
+					chatList: [], //会话列表
 					msgList: [], //消息列表
 					changeChatBackground: 0, //控制选中背景，默认选中第一个
 					msgContent: "", //发送文本的内容
-					contentType: "1", //消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
+					contentType: "1", //消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1文本 2图片 4位置 5文件
 					picture: null, //发送图片对象
 					location: null, //发送位置信息
 					chatDetail: { //当前聊天人相关信息
-						userChatId: "", //人聊天id
-						nickName: "", //人昵称
-						headUrl: "", //人头像
+						friendId: "", //好友id
+						nickName: "", //昵称
+						headUrl: "", //头像
 						partner_hid: "", //
 						partner_uid: "", //
 						unitId: "", //
@@ -865,7 +865,7 @@
 								var obj = data[0];
 								this.chatDetail.nickName = obj.nickName
 								this.chatDetail.headUrl = obj.headUrl
-								this.chatDetail.userChatId = obj.friendId;
+								this.chatDetail.friendId = obj.friendId;
 								// this.chatDetail.contentType=obj.contentType;//消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
 								this.chatDetail.firstUnreadCount = obj.unreadcount;
 
@@ -875,7 +875,7 @@
 								setTimeout(function() {
 									vm.msgList = [];
 									vm.getMessageHis(vm.pageNumber, vm.pageSize, vm.userInfoData.userId,
-										vm.chatDetail.userChatId);
+										vm.chatDetail.friendId);
 								}, 2000)
 							}
 
@@ -893,8 +893,8 @@
 							//获取当前选中的人的最新未读数
 							if (data != [] && data.length > 0) {
 								for (var i = 0; i < data.length; i++) {
-									var userChatId = data[i].userChatId;
-									if (userChatId == this.chatDetail.userChatId) {
+									var friendId = data[i].friendId;
+									if (friendId == this.chatDetail.friendId) {
 										this.chatDetail.unreadCount = data[i].unreadcount;
 									}
 								}
@@ -907,14 +907,14 @@
 					friendsClick(item, index) { //点击好友列表(通讯录)
 						this.chatDetail.nickName = item.nickName;
 						this.chatDetail.headUrl = item.headUrl;
-						this.chatDetail.userChatId = item.userId;
+						this.chatDetail.friendId = item.userId;
 
 						//获取当前这个人的聊天记录
 						this.msgList = [];
 						this.pageBtnText = "查看更多消息";
 						this.pageNumber = 1;
 						this.getMessageHis(this.pageNumber, this.pageSize, this.userInfoData.userId, this.chatDetail
-							.userChatId);
+							.friendId);
 
 						//清空这个人未读消息数
 						this.updateUnreadCount(0);
@@ -929,7 +929,7 @@
 						this.changeChatBackground = index; //控制选中背景颜色的位置；
 						this.chatDetail.nickName = item.nickName;
 						this.chatDetail.headUrl = item.headUrl;
-						this.chatDetail.userChatId = item.friendId;
+						this.chatDetail.friendId = item.friendId;
 						// this.chatDetail.contentType=item.contentType;//消息类型
 
 						//获取当前这个人的聊天记录
@@ -937,7 +937,7 @@
 						this.pageBtnText = "查看更多消息";
 						this.pageNumber = 1;
 						this.getMessageHis(this.pageNumber, this.pageSize, this.userInfoData.userId, this.chatDetail
-							.userChatId);
+							.friendId);
 
 						var unreadcount = item.unreadcount;
 						if (unreadcount > 0) {
@@ -985,8 +985,8 @@
 						var contentType = this.contentType;
 						console.log("发送类型：" + contentType);
 						var msgContent = this.msgContent;
-						var userChatId = this.chatDetail.userChatId;
-						if (userChatId == null || userChatId == "") {
+						var friendId = this.chatDetail.friendId;
+						if (friendId == null || friendId == "") {
 							this.showTipsW("请选择要发送的好友哟，亲！");
 							return;
 						}
@@ -1011,7 +1011,7 @@
 						}
 						var para = {
 							"sendUserId": this.userInfoData.userId,
-							"receiverUserId": userChatId,
+							"receiverUserId": friendId,
 							"message": msgContent,
 							"contentType": contentType,
 							"picture": this.picture,
@@ -1043,15 +1043,15 @@
 						});
 					},
 					updateUnreadCount(unreadCount) { //更新未读消息数
-						var userChatId = this.chatDetail.userChatId;
-						if (userChatId == "") {
+						var friendId = this.chatDetail.friendId;
+						if (friendId == "") {
 							console.log("还没有获取到好友id")
 							return;
 						}
 						var para = {
 							"user_id": this.userInfoData.userId,
 							"unreadCount": unreadCount,
-							"friend_id": userChatId
+							"friend_id": friendId
 						};
 						XEAjax.post(`${curl}/chat/updateUnreadCount`, para).then(data => {
 							var data = data.data;
@@ -1092,7 +1092,7 @@
 							console.log("当前第：" + this.pageNumber + "页");
 							this.pageNumber++;
 							this.getMessageHis(this.pageNumber, this.pageSize, this.userInfoData.userId, this.chatDetail
-								.userChatId);
+								.friendId);
 						} else {
 							this.pageBtnText = "没有更多数据了...";
 						}
@@ -1202,8 +1202,9 @@
 					},
 					inputClick() { //选中输入框
 						this.contentType = 1;
+						console.log(this.chatDetail)
 						if (this.chatDetail.unreadCount > 0) {
-							// 	//清空这个客人未读消息数
+							//清空这个客人未读消息数
 							this.updateUnreadCount(0);
 						}
 					},

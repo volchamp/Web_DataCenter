@@ -96,6 +96,15 @@
 				right: 50px;
 				top: 100px;
 			}
+			
+			input:-webkit-autofill {
+				-webkit-text-fill-color: #ededed !important;
+				-webkit-box-shadow: 0 0 0px 1000px transparent  inset !important;
+				background-color:transparent;
+				background-image: none;
+				transition: background-color 50000s ease-in-out 0s;
+			}
+
 		</style>
 	</head>
 
@@ -150,11 +159,11 @@
 			<div id="form">
 				<div id="input_box">
 					<i class="fa fa-user" aria-hidden="true"></i>
-					<input class="in" type="text" v-model="formData.user_id" placeholder="请输入账号">
+					<input class="my-login-input" type="text" v-model="formData.user_id" placeholder="请输入账号">
 				</div>
 				<div id="input_box">
 					<i class="fa fa-key" aria-hidden="true"></i>
-					<input class="in" type="passwoprd" v-model="formData.user_pwd" placeholder="请输入密码">
+					<input class="my-login-input" type="password" v-model="formData.user_pwd" placeholder="请输入密码" @keyup.enter="handelSave($event,1)">
 				</div>
 			</div>
 
@@ -229,6 +238,15 @@
 						message: msg,
 						status: 'info'
 					})
+				},
+				handelSave(e, type) { //回车事件
+					if (e.altKey && e.keyCode === 13) {
+						// 如果是alt+enter
+						
+					} else {
+						// 如果是enter 就登录
+						this.login();
+					}
 				},
 				openRegister(){
 					if(this.showRegisterModal){
