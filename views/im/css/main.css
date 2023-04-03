@@ -52,7 +52,7 @@ ul li{
 }
 
 .box{
-	background-image: url(../images/bg.jpg);
+	background-image: url(../images/bg1.jpg);
     background-repeat: no-repeat;
     width: 100%;
     height: 100%;
@@ -64,8 +64,8 @@ ul li{
 }
 
 .wechat{
-    width:860px;
-    height:680px;
+    width:1200px;
+    height:800px;
     background: #fff;
     box-shadow: 0 0 8px rgba(0,0,0,.1);
     border-radius:4px;
@@ -74,7 +74,7 @@ ul li{
 
 .sidestrip{
 	width: 60px;
-	background:#575f67;/*2a2e32*/
+	background:white;/*2a2e32*/
 	float: left;
 	height: 100%;
 	border-radius: 4px 0 0 4px;
@@ -254,12 +254,13 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	display: inline-block;
 	width: 100%;
 	float:inherit;
+	background-color: #FCFCFC;
 }
 
 .wx_search input{
 	width: 190px;
 	height: 25px;
-	background:#e5e2e2;
+	background:#FCFCFC;
 	border: 1px solid #d9d7d6;
 	padding-left: 5px;
 	outline: 0;
@@ -269,7 +270,7 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 .wx_search button{
 	font-size:20px;
 	font: initial;
-	background:#e5e2e2;
+	background:#FCFCFC;
 	border: 1px solid #d9d7d6;
 	float: right;
 	color: #585858;
@@ -279,7 +280,7 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 .wx_search button:hover{
-	background:#d0d0d0;
+	background:#F5F5F5;
 	border: 1px solid #b9b6b5;
 }
 
@@ -296,11 +297,13 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 .user_list li:hover, .icon_list li:hover{
-	background:#dedbdb;
+	background: #F5F5F5;
+	/* background:#dedbdb; */
 }
 
 .friends_box:hover{
-	background:#dedbdb;
+	/* background:#dedbdb; */
+	background: #F5F5F5;
 }
 
 .user_head{
@@ -382,6 +385,7 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	height:calc(100% - 62px);
     position: relative;
 	overflow: auto !important;
+	background-color: #FCFCFC;
 }
 
 .friends_list li > p{
@@ -423,16 +427,16 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 .icon_active, .user_active{
-	background:#dedbdb;
+	background:#E9EBEC;
 }
 
 /*******聊天窗口******/
 
 .talk_window{
-	width:550px;
+	width:680px;
 	height: 100%;
 	float: left;
-	background: #f5f5f5;
+	background: #F8F8F8;
 }
 
 .windows_top{
@@ -496,8 +500,9 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 
 .windows_input{
 	border-top: 1px solid #ececec;
-	height: 145px;
+	height: 265px;
 	width: 100%;
+	background-color: #FFFFFF;
 }
 
 .windows_body{
@@ -510,7 +515,7 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 	height:calc(100% - 42px);
 	border: none;
 	outline: 0;
-	background:#f5f5f5;
+	background:#FFFFFF;
 	resize:none;
 	margin-left: 28px;
 	font-size: 14px;
@@ -541,9 +546,9 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
 }
 
 #send:hover{
-	background:#09bb07;
+	background:#4A89FD;
 	color: #fff;
-	border:1px solid #09bb07;
+	border:1px solid #4A89FD;
 }
 
 .optionLeft{
@@ -592,7 +597,7 @@ ul.am-dropdown-content>li>a:focus, ul.am-dropdown-content>li>a:hover{
     padding:7px;
     border-radius:4px;
     margin:0 10px;
-    max-width:270px;
+    max-width:80%;
     border: 1px solid #9eea6a;
     position: relative;
 	word-break: break-all;
