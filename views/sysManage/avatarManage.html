@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="../../static/css/expand-table.css" />
 		<link rel="stylesheet" type="text/css" href="../../static/css/common.css">
-
+		
 		<script type="text/javascript" src="../../lib/vue/vue.js"></script>
 		<script type="text/javascript" src="../../lib/xe-utils/xe-utils.js"></script>
 		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
@@ -29,81 +29,23 @@
 			background-size: 80px;
 			cursor: pointer;
 		}
-
-		.bgCover {
+		
+		.bgCover{
 			height: 450px;
 			background-size: 100%;
 		}
-
-		.info_text {
+		
+		.info_text{
 			font-size: 13px;
 			color: black;
-		}
-
-		.avatar_window {
-			width: 500px;
-			height: 500px;
-			background: #FFF;
-			box-shadow: 0 0 8px rgba(0, 0, 0, .1);
-			border: 1px solid lightgray;
-			border-radius: 4px;
-			overflow: hidden;
-			position: absolute;
-			left: 200px;
-			top: 30px;
-			z-index: 999;
 		}
 	</style>
 
 	<body>
 		<div id="app">
-			<template>
-				<!-- 截图发送 -->
-				<div v-show="uploadAvatarVisible" class="avatar_window">
-					<div style="display: flex;">
-						<div style="flex: 1;"></div>
-						<img @click="closeUpload" src="../../static/img/close2.png"
-							style="margin: 3px 6px 0px 0px;height: 20px;width: 20px;cursor: pointer;" />
-					</div>
-					<div style="display: flex;flex-direction: column;align-items: center;width: 100%;height: 340px;">
-						<div style="flex: 1;width: 100%;padding: 10px 10px 10px 10px;">
-							<div class="info_head" :style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"
-								@click="upload(userInfoData.userAvatar)"></div>
-						</div>
-						<div>
-							<button @click="change">确认更换</button>
-						</div>
-					</div>
-				</div>
-			</template>
-
+		
 			<div style="display: flex;width: 900px;height: 650px;">
-				<!-- 左边 -->
-				<div style="flex: 1;display: flex;flex-direction: column;">
-					<div class="bgCover" :style="{backgroundImage: 'url('+ userInfoData.userBgCover +')'}">
-						<span style="color: white;font-size: 15px;">
-							更换封面
-						</span>
-					</div>
-					<div
-						style="display: flex;flex-direction: row;justify-content: center;background-color: darkslategray;height: 200px;align-items: center;">
-
-						<div class="info_head" :style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"
-							@click="changeAvatar(userInfoData.userAvatar)" title="点击更换头像"></div>
-						<div>
-							<div><span style="font-size: 22px;color: white;">{{userInfoData.userName}}</span></div>
-							<div><span style="font-size: 14px;color: white;">编辑个性签名</span></div>
-						</div>
-					</div>
-				</div>
-
-				<!-- 右边 -->
-				<div style="flex: 1;padding: 20px;">
-					<div><span class="info_text">ID:</span></div>
-					<div><span class="info_text">昵称:</span></div>
-					<div><span class="info_text">性别:</span></div>
-					<div><span class="info_text">年龄:</span></div>
-				</div>
+				
 			</div>
 		</div>
 	</body>
@@ -111,8 +53,6 @@
 		var vm = new Vue({
 			el: "#app",
 			data: {
-				uploadAvatarVisible: false, //是否显示个人资料设置页面
-				uploadAvatarLoading: false,
 				userInfoData: { //当前登录人信息
 					userId: "", //当前登录用户账号
 					userAvatar: "", //用户头像
@@ -122,27 +62,19 @@
 				}
 			},
 			filters: {
-				formatAddr: function(addr) {
-					if (addr == null) {
-						return "";
-					} else {
-						return '地址：' + addr;
-					}
-				}
+				
 			},
 			created() {
-
+				
 			},
 			mounted() {
 				this.getUserInfo();
 			},
 			methods: {
-				closeUpload: function() {
-					this.uploadAvatarVisible = false;
-				},
 				getUserInfo: function() { //获取用户信息
-					var that = this;
-					var signInputParms = {}
+					var that=this;
+					var signInputParms = {
+					}
 					webapi("/user/getUser", signInputParms, function(data) {
 						var result = data.result;
 						var msg = data.msg;
@@ -155,7 +87,7 @@
 							} else {
 								that.userInfoData.userAvatar = "../../static/img/logo_profile.png";
 							}
-
+						
 						} else {
 							alert(msg)
 							if (msg.indexOf("重新登录") != -1) {
@@ -168,11 +100,8 @@
 						return;
 					})
 				},
-				changeAvatar: function() {
-					this.uploadAvatarVisible = true;
-				},
-				change: function() {
-
+				changeAvatar:function(){
+					this.uploadAvatarVisible=true;
 				}
 			}
 		})
