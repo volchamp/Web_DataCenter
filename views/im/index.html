@@ -155,7 +155,7 @@
 				bottom: 23px;
 				z-index: 999;
 			}
-			
+
 			.niuniuinfo {
 				width: 330px;
 				height: 100px;
@@ -213,7 +213,7 @@
 						<div style="display: flex;">
 							<div style="flex: 1;"></div>
 							<img @click="closeScreenshot" src="../../static/img/close2.png"
-								style="margin: 3px 6px 0px 0px;height: 20px;width: 20px;" />
+								style="margin: 3px 6px 0px 0px;height: 20px;width: 20px;cursor: pointer;" />
 						</div>
 						<div
 							style="display: flex;flex-direction: column;align-items: center;width: 100%;height: 340px;">
@@ -395,15 +395,15 @@
 				</div>
 
 
-				<!--聊天窗口-->
+				<!--聊天窗口 start-->
 				<div class="talk_window">
 					<div class="windows_top">
 						<div class="windows_top_box">
 							<span>{{chatDetail.nickName}}</span>
 							<ul class="window_icon">
-								<li><a><img src="images/icon/icon8.png" /></a></li>
+								<!-- <li><a><img src="images/icon/icon8.png" /></a></li>
 								<li><a><img src="images/icon/icon9.png" /></a></li>
-								<li><a><img src="images/icon/icon10.png" /></a></li>
+								<li><a><img src="images/icon/icon10.png" /></a></li> -->
 							</ul>
 							<div class="extend" class="am-btn am-btn-success"></div>
 						</div>
@@ -414,12 +414,12 @@
 						<ul style="width: 100%;height: 100%; overflow:auto;" id="chatContentList">
 							<li style="text-align: center;" @click="moreMsg"><a>{{pageBtnText}}</a></li>
 							<li v-for="item in msgList"
-								v-if="item.sendUser==userInfoData.userId&&item.receiver==chatDetail.friendId"
-								class="me" style="width: 100%;">
+								v-if="item.sendUser==userInfoData.userId&&item.receiver==chatDetail.friendId" class="me"
+								style="width: 100%;">
 								<!-- 发送时间 -->
 								<div style="text-align: center;margin: 5px 0px 10px 0px;font-size: 12px;color: white;">
 									<div
-										style="background-color: lightgray;display: inline;display: inline-block;zoom: 1;padding: 3px 6px 3px 6px;border-radius: 2px;">
+										style="color: gray;display: inline;display: inline-block;zoom: 1;padding: 3px 6px 3px 6px;border-radius: 2px;">
 										{{item.sendDate | formatDate}}
 									</div>
 								</div>
@@ -438,7 +438,8 @@
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
 									<div style="flex: 1;"></div>
 									<div style="">
-										<img style="width: 120px;height: 150px;" :src="item.pictureUrl | formatImgUrl" />
+										<img style="width: 120px;height: 150px;"
+											:src="item.pictureUrl | formatImgUrl" />
 									</div>
 									<div>
 										<img class="userAvatar" :src="userInfoData.userAvatar"
@@ -448,14 +449,14 @@
 								<!-- 文件 -->
 								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
 									<div style="flex: 1;"></div>
-									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;"
+									<div style="background-color: white;border: 1px solid #4A89F1;border-radius: 5px;padding: 10px;max-width: 300px;cursor: pointer;"
 										@click="fileDld(item.fileDownloadUrl)">
 										<div style="display: flex;text-align: center;">
 											<div style="font-size: 16px;margin-right: 8px;">{{item.fileName}}</div>
 											<img src="./images/file.png" />
 										</div>
 										<div style="height: 1px;background-color: #f1f1f1;margin-top: 10px;"></div>
-										<div style="color: lightgray;margin-top: 2px;">点击可下载</div>
+										<div style="color: gray;margin-top: 2px;">点击可下载</div>
 									</div>
 									<div>
 										<img class="userAvatar" :src="userInfoData.userAvatar"
@@ -467,7 +468,7 @@
 								<!-- 发送时间 -->
 								<div style="text-align: center;margin: 5px 0px 10px 0px;font-size: 12px;color: white;">
 									<div
-										style="background-color: lightgray;display: inline;display: inline-block;zoom: 1;padding: 3px 6px 3px 6px;border-radius: 2px;">
+										style="color: gray;display: inline;display: inline-block;zoom: 1;padding: 3px 6px 3px 6px;border-radius: 2px;">
 										{{item.sendDate | formatDate}}
 									</div>
 								</div>
@@ -483,32 +484,34 @@
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
 									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
 									<div style="max-width: 20%;margin-left: 12px;">
-										<img style="width: 120px;height: 150px;" :src="item.pictureUrl | formatImgUrl" />
+										<img style="width: 120px;height: 150px;"
+											:src="item.pictureUrl | formatImgUrl" />
 									</div>
 								</div>
 								<!-- 文件 -->
 								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
 									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
-									<div style="background-color: white;border: 1px solid lightgray;border-radius: 5px;padding: 10px;max-width: 300px;"
+									<div style="background-color: white;border: 1px solid #4A89F1;border-radius: 5px;padding: 10px;max-width: 300px;cursor: pointer;"
 										@click="fileDld(item.fileDownloadUrl)">
 										<div style="display: flex;text-align: center;">
 											<div style="font-size: 16px;margin-right: 8px;">{{item.fileName}}</div>
 											<img src="./images/file.png" />
 										</div>
 										<div style="height: 1px;background-color: #f1f1f1;margin-top: 10px;"></div>
-										<div style="color: lightgray;margin-top: 2px;">超超飞书，点击可下载</div>
+										<div style="color: gray;margin-top: 2px;">超超飞书，点击可下载</div>
 									</div>
 								</div>
 							</li>
 						</ul>
 					</div>
 
+					<!--输入框 start-->
 					<div class="windows_input" id="talkbox">
 						<div style="display: flex;flex-direction: row;" class="input_btn">
 							<div class="input_item">
 								<a class="input_a1"></a>
 							</div>
-							<!-- <div @click="chooseLocation" class="input_item" title="敬请期待...">
+							<!-- 							<div @click="chooseLocation" class="input_item" title="敬请期待...">
 								<a class="input_a3"></a>
 							</div> -->
 							<div @click="screentShot" class="input_item" title="截图发送">
@@ -538,16 +541,35 @@
 							</div>
 						</div>
 						<div class="input_box">
-							<!-- <div style="background-color: #0000FF;display: flex;flex-direction: column;">
-								<img src="images/icon/icon18_1.png" />
-								<button class="send" @click="sendMsg">发送（S）</button>
-							</div> -->
 							<textarea @click="inputClick" name="" rows="" cols="" v-model="msgContent" id="input_box"
 								@keyup.enter="handelSave($event,1)"></textarea>
-							<button id="send" @click="sendMsg">发送（S）</button>
+							<button id="send" @click="sendMsg">发 送</button>
 						</div>
 					</div>
+					<!--输入框 end-->
+
 				</div>
+				<!--聊天窗口 end-->
+
+				<!--最右侧好友资料卡 start-->
+				<div class="window_friend_info">
+					<div class="friend_info">
+						<div class="info_icon">
+							<a><img src="images/icon/icon10.png" /></a>
+						</div>
+						<div style="margin-top: 20px;">
+							<div class="info_head" :style="{backgroundImage: 'url('+ chatDetail.headUrl +')'}"></div>
+							<div style="margin-top: 15px;text-align: center;">
+								<span style="font-size: 20px;color: black;">{{chatDetail.nickName}}</span>
+							</div>
+							<div style="margin-top: 5px;text-align: center;">
+								<span style="font-size: 17px;color: grey;">{{chatDetail.friendId}}</span>
+							</div>
+						</div>
+						<div style="width: 80%;height: 1px;background-color: #ededed;margin-top: 20px;"></div>
+					</div>
+				</div>
+				<!--最右侧好友资料卡 end-->
 			</div>
 		</div>
 
@@ -639,14 +661,14 @@
 						var times = d.getFullYear() + '-' + month + '-' + day + " " + hours + ':' + min + ':' + sec;
 						return times;
 					},
-					formatImgUrl:function(url){
+					formatImgUrl: function(url) {
 						//拼接一下图片服务器地址
-						return imgurl+url;
+						return imgurl + url;
 					}
 				},
-				computed:{//计算属性
-					msg2:function(){//该函数必须有返回值,用来获取属性,成为get函数
-						return this.msg+" world!"
+				computed: { //计算属性
+					msg2: function() { //该函数必须有返回值,用来获取属性,成为get函数
+						return this.msg + " world!"
 					}
 				},
 				created() { //页面加载起始
@@ -700,7 +722,7 @@
 						this.contentType = 3;
 					},
 					fileDld(fileDownloadUrl) { //文件下载
-						window.location.href = fileDownloadUrl+"&V_token="+getCookie("v_token");
+						window.location.href = fileDownloadUrl + "&V_token=" + getCookie("v_token");
 					},
 					formatTime({
 						cellValue
