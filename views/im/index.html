@@ -12,9 +12,12 @@
 		<link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="../../static/css/expand-table.css" />
 		<link rel="stylesheet" type="text/css" href="../../static/css/common.css">
+
+
 		<script type="text/javascript" src="../../lib/vue/vue.js"></script>
 		<script type="text/javascript" src="../../lib/xe-utils/xe-utils.js"></script>
 		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
+		<script type="text/javascript" src="../../lib/element-ui/index-change.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
 		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
@@ -173,6 +176,22 @@
 	</head>
 	<body>
 		<div class="box" id="app">
+			<!-- 添加好友弹窗 -->
+			<el-dialog :visible.sync="addFriendsVisible" title="添加好友" width="80%" v-loading="addFriendsLoading"
+				element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
+				element-loading-background="rgba(0, 0, 0, 0.7)">
+				<iframe id="addFriendsframe" src="../addFriends/userList.html"
+					style="width:100%;height: 700px;"></iframe>
+			</el-dialog>
+			
+			<!-- 个人资料页弹窗 -->
+			<el-dialog :visible.sync="userSettingVisible" title="个人中心" width="900px" v-loading="userSettingLoading"
+				element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
+				element-loading-background="rgba(0, 0, 0, 0.7)">
+				<iframe id="userSettingframe" src="../sysManage/userSetting.html"
+					style="width:100%;height: 700px;"></iframe>
+			</el-dialog>
+
 			<div class="wechat">
 				<template>
 					<!-- 好友管理模态框 -->
@@ -239,20 +258,29 @@
 						<div id="info" style="padding: 10px;font-size: 14px;"></div>
 					</div>
 				</template>
+				<template>
+					<!-- 图片预览 -->
+					<div v-show="showImgPreview" @click="closeImgPreview"
+						style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:10000;width:100%;height:100%;display:flex;align-items: center;justify-content: center;">
+						<img :src="showImgPreviewSrc" style="max-height: 100%;" />
+					</div>
+				</template>
 
 				<div class="sidestrip">
 					<div class="am-dropdown" data-am-dropdown>
 						<!--头像插件-->
 						<div class="own_head am-dropdown-toggle"
-							:style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"></div>
+							:style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}" @click="userSetting"></div>
 						<div class="am-dropdown-content">
 							<div class="own_head_top">
 								<div class="own_head_top_text">
-									<p class="own_name">{{userInfoData.userName}}<img src="images/icon/head.png"
-											alt="" /></p>
+									<p class="own_name">{{userInfoData.userName}}
+										<img src="images/icon/head.png"
+											alt="" />
+									</p>
 									<p class="own_numb">账号：{{userInfoData.userId}}</p>
 								</div>
-								<img :src="userInfoData.userAvatar" alt="" />
+								<img :src="userInfoData.userAvatar" alt=""  @click="imgPreview(userInfoData.userAvatar)" style="cursor: pointer;"/>
 							</div>
 							<div class="own_head_bottom" style="display: block;">
 								<p><span>地区</span>云南 昆明</p>
@@ -265,15 +293,15 @@
 					</div>
 					<!--三图标-->
 					<div class="sidestrip_icon">
-						<a id="si_1" style="background: url(images/icon/head_2_1.png) no-repeat;"></a>
-						<a id="si_2"></a>
-						<a id="si_3"></a>
+						<a id="si_1" title="会话列表" style="background: url(images/icon/head_2_1.png) no-repeat;"></a>
+						<a id="si_2" title="通讯录"></a>
+						<a id="si_3" title="收藏"></a>
 					</div>
 
 					<!--底部扩展键-->
 					<div id="doc-dropdown-justify-js">
 						<div class="am-dropdown" id="doc-dropdown-js" style="position: initial;">
-							<div class="sidestrip_bc am-dropdown-toggle"></div>
+							<div class="sidestrip_bc am-dropdown-toggle" title="更多"></div>
 							<ul class="am-dropdown-content" style="">
 								<li style="display: none;">
 									<a href="#"
@@ -293,7 +321,7 @@
 								<li><a href="#" @click="openFriends">添加好友</a></li>
 								<li><a href="#" @click="friendsManage">好友管理</a></li>
 								<li v-show="isShowSysManage"><a href="#" @click="sysManage">系统管理</a></li>
-								<li><a href="#">设置</a></li>
+								<li><a href="#" @click="userSetting">设置</a></li>
 							</ul>
 						</div>
 					</div>
@@ -303,7 +331,7 @@
 				<div class="middle on">
 					<div class="wx_search">
 						<input type="text" v-model="searchValChat" placeholder="搜索" />
-						<button @click="openFriends">+</button>
+						<button title="添加好友" @click="openFriends">+</button>
 					</div>
 					<div class="office_text">
 						<ul class="user_list">
@@ -336,7 +364,7 @@
 				<div class="middle">
 					<div class="wx_search">
 						<input type="text" v-model="searchValFriends" placeholder="搜索" />
-						<button @click="openFriends">+</button>
+						<button title="添加好友" @click="openFriends">+</button>
 					</div>
 					<div class="office_text">
 						<ul class="friends_list">
@@ -438,8 +466,9 @@
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
 									<div style="flex: 1;"></div>
 									<div style="">
-										<img style="width: 120px;height: 150px;"
-											:src="item.pictureUrl | formatImgUrl" />
+										<img style="width: 120px;height: 150px;cursor: pointer;"
+											:src="item.pictureUrl | formatImgUrl"
+											@click="imgPreview(imgurl+item.pictureUrl)" />
 									</div>
 									<div>
 										<img class="userAvatar" :src="userInfoData.userAvatar"
@@ -484,8 +513,9 @@
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
 									<img class="userAvatar" :src="chatDetail.headUrl" :title="chatDetail.nickName">
 									<div style="max-width: 20%;margin-left: 12px;">
-										<img style="width: 120px;height: 150px;"
-											:src="item.pictureUrl | formatImgUrl" />
+										<img style="width: 120px;height: 150px;cursor: pointer;"
+											:src="item.pictureUrl | formatImgUrl"
+											@click="imgPreview(imgurl+item.pictureUrl)" />
 									</div>
 								</div>
 								<!-- 文件 -->
@@ -558,7 +588,8 @@
 							<a><img src="images/icon/icon10.png" /></a>
 						</div>
 						<div style="margin-top: 20px;">
-							<div class="info_head" :style="{backgroundImage: 'url('+ chatDetail.headUrl +')'}"></div>
+							<div class="info_head" :style="{backgroundImage: 'url('+ chatDetail.headUrl +')'}"
+								@click="imgPreview(chatDetail.headUrl)"></div>
 							<div style="margin-top: 15px;text-align: center;">
 								<span style="font-size: 20px;color: black;">{{chatDetail.nickName}}</span>
 							</div>
@@ -590,7 +621,13 @@
 			var vm = new Vue({
 				el: "#app",
 				data: {
+					addFriendsVisible: false, //是否显示添加好友页面
+					addFriendsLoading: false,
+					userSettingVisible: false, //是否显示个人资料设置页面
+					userSettingLoading: false,
 					showModalNiuNiuInfo: false, //是否显示牛牛截图提示窗口
+					showImgPreview: false, //是否显示图片预览窗口
+					showImgPreviewSrc: "", //预览图片内容
 					userInfoData: { //当前登录人信息
 						userId: null, //当前登录用户账号
 						userAvatar: "", //用户头像
@@ -1119,6 +1156,16 @@
 							this.pageBtnText = "没有更多数据了...";
 						}
 					},
+					userSetting:function(){
+						this.userSettingVisible=true;
+					},
+					imgPreview: function(src) {
+						this.showImgPreviewSrc = src;
+						this.showImgPreview = true;
+					},
+					closeImgPreview: function() {
+						this.showImgPreview = false;
+					},
 					filePreviewEvent(file) {
 
 					},
@@ -1237,7 +1284,7 @@
 						})
 					},
 					openFriends() {
-						window.open("../addFriends/userList.html");
+						this.addFriendsVisible = true;
 					},
 					friendsManage() {
 						this.showModalFriendsManage = true;

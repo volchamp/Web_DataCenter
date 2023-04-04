@@ -108,6 +108,14 @@
 			a:hover {
 				color: red;
 			}
+
+			#act::-webkit-input-placeholder {
+				color: #D5D5D5;
+			}
+
+			#pwd::-webkit-input-placeholder {
+				color: #D5D5D5;
+			}
 		</style>
 	</head>
 
@@ -165,12 +173,12 @@
 			<div id="form">
 				<div id="input_box">
 					<i class="fa fa-user" aria-hidden="true"></i>
-					<input class="my-login-input" type="text" v-model="formData.user_id" placeholder="请输入账号">
+					<input id="act" class="" type="text" v-model="formData.user_id" placeholder="请输入账号">
 				</div>
 				<div id="input_box">
 					<i class="fa fa-key" aria-hidden="true"></i>
-					<input class="my-login-input" type="password" v-model="formData.user_pwd" placeholder="请输入密码"
-						@keyup.enter="handelSave($event,1)">
+					<input id="pwd" class="" type="password" v-model="formData.user_pwd"
+						placeholder="请输入密码" @keyup.enter="handelSave($event,1)">
 				</div>
 			</div>
 

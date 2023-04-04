@@ -99,6 +99,7 @@ ul li {
 	border-radius: 2px;
 	/* background: url(../images/own_head.jpg); */
 	background-size: 34px;
+	cursor: pointer;
 }
 
 .am-dropdown-content {
@@ -196,6 +197,7 @@ ul li {
 	height: 24px;
 	display: block;
 	margin-bottom: 30px;
+	cursor: pointer;
 }
 
 .active {
@@ -209,6 +211,7 @@ ul li {
 	width: 16px;
 	height: 13px;
 	left: 22px;
+	cursor: pointer;
 }
 
 ul.am-dropdown-content {
@@ -706,6 +709,7 @@ ul.am-dropdown-content>li>a:hover {
 	height: 100px;
 	border-radius: 100%;
 	background-size: 100px;
+	cursor: pointer;
 }
 
 .info_icon{

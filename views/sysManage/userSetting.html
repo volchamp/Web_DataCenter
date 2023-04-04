@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>用户设置</title>
+		<link rel="stylesheet" href="../../lib/element-ui/theme-chalk/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table-plugin-element/style.css">
+		<link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="../../static/css/expand-table.css" />
+		<link rel="stylesheet" type="text/css" href="../../static/css/common.css">
+		
+		<script type="text/javascript" src="../../lib/vue/vue.js"></script>
+		<script type="text/javascript" src="../../lib/xe-utils/xe-utils.js"></script>
+		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
+		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
+		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../static/js/webApi.js"></script>
+	</head>
+	<style type="text/css">
+		.info_head {
+			width: 80px;
+			height: 80px;
+			border-radius: 100%;
+			background-size: 80px;
+			cursor: pointer;
+		}
+		
+		.bgCover{
+			height: 450px;
+			background-size: 100%;
+		}
+		
+		.info_text{
+			font-size: 13px;
+			color: black;
+		}
+	</style>
+
+	<body>
+		<div id="app">
+			<div style="display: flex;width: 900px;height: 650px;">
+				<!-- 左边 -->
+				<div style="flex: 1;display: flex;flex-direction: column;">
+					<div class="bgCover" :style="{backgroundImage: 'url('+ userInfoData.userBgCover +')'}">
+						<span style="color: white;font-size: 15px;">
+							更换封面
+						</span>
+					</div>
+					<div style="display: flex;flex-direction: row;justify-content: center;background-color: darkslategray;height: 200px;align-items: center;">
+					
+						<div class="info_head" :style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"
+							@click="changeAvatar(userInfoData.userAvatar)"></div>
+							<div>
+								<div><span style="font-size: 22px;color: white;">{{userInfoData.userName}}</span></div>
+								<div><span style="font-size: 14px;color: white;">编辑个性签名</span></div>
+							</div>
+					</div>
+				</div>
+
+				<!-- 右边 -->
+				<div style="flex: 1;padding: 20px;">
+					<div><span class="info_text">ID:</span></div>
+					<div><span class="info_text">昵称:</span></div>
+					<div><span class="info_text">性别:</span></div>
+					<div><span class="info_text">年龄:</span></div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: "#app",
+			data: {
+				userInfoData: { //当前登录人信息
+					userId: "", //当前登录用户账号
+					userAvatar: "", //用户头像
+					userName: "", //用户名
+					roleCodes: '', //角色id
+					userBgCover: '../im/images/bg1.jpg' //用户背景封面
+				}
+			},
+			filters: {
+				formatAddr: function(addr) {
+					if (addr == null) {
+						return "";
+					} else {
+						return '地址：' + addr;
+					}
+				}
+			},
+			created() {
+				
+			},
+			mounted() {
+				this.getUserInfo();
+			},
+			methods: {
+				getUserInfo: function() { //获取用户信息
+					var that=this;
+					var signInputParms = {
+					}
+					webapi("/user/getUser", signInputParms, function(data) {
+						var result = data.result;
+						var msg = data.msg;
+						if (result == "SUCCESS") {
+							var userinfo = data.userinfo;
+							that.userInfoData.userId = userinfo.userId;
+							that.userInfoData.userName = userinfo.nickName;
+							if (userinfo.headUrl) {
+								that.userInfoData.userAvatar = userinfo.headUrl;
+							} else {
+								that.userInfoData.userAvatar = "../../static/img/logo_profile.png";
+							}
+						
+						} else {
+							alert(msg)
+							if (msg.indexOf("重新登录") != -1) {
+								//回到登录页
+								window.location.href = '../../login.html';
+							}
+						}
+					}, function(xhr, type, errorThrown) {
+						layer.alert('获取用户信息出错!');
+						return;
+					})
+				},
+				changeAvatar:function(){
+					
+				}
+			}
+		})
+
+
+		function dateTrans(date) {
+			let _date = new Date(parseInt(date));
+			let y = _date.getFullYear();
+			let m = _date.getMonth() + 1;
+			m = m < 10 ? ('0' + m) : m;
+			let d = _date.getDate();
+			d = d < 10 ? ('0' + d) : d;
+			let h = _date.getHours();
+			h = h < 10 ? ('0' + h) : h;
+			let minute = _date.getMinutes();
+			let second = _date.getSeconds();
+			minute = minute < 10 ? ('0' + minute) : minute;
+			second = second < 10 ? ('0' + second) : second;
+			// console.log( y + '-' + m + '-' + d + ' ' + '　' + h + ':' + minute + ':' + second)
+			let dates = y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+
+			return dates;
+		}
+
+		function getUrlParam(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+			var r = window.location.search.substr(1).match(reg); //匹配目标参数
+			if (r != null) {
+				return unescape(r[2]);
+			}
+			return null; //返回参数值
+		}
+	</script>
+
+</html>

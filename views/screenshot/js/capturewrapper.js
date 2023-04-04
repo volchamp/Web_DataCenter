@@ -60,7 +60,7 @@ function ShowDownLoad()
 {
 	//显示牛牛截图信息框
 	vm.showModalNiuNiuInfo=true;
-    $('#info').html('如果超过5秒无响应，请点此<a target="_blank" href="' + downloadUrl + '" + date.getMinutes() + date.getSeconds()">安装</a>');
+    $('#info').html('如果超过5秒无响应，请点此<a target="_blank" href="' + downloadUrl + '" + date.getMinutes() + date.getSeconds()">安装插件</a>');
 }
 
 /*
@@ -104,7 +104,7 @@ function StartCapture()
 	else if(captureRet == emCaptureUnknown){
 		//显示牛牛截图信息框
 		vm.showModalNiuNiuInfo=true;
-		$('#info').html('正在截图中, 如果超过5秒无响应，请点此<a target="_blank" href="' + downloadUrl + '" + date.getMinutes() + date.getSeconds()">安装</a>');
+		$('#info').html('正在截图中, 如果超过5秒无响应，请点此<a target="_blank" href="' + downloadUrl + '" + date.getMinutes() + date.getSeconds()">安装插件</a>');
 	    console.log("正在截图中, 如果超过5秒无响应，请点此安装");
 	}
 }
