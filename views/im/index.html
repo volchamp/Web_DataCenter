@@ -1175,6 +1175,9 @@
 						this.userSettingVisible = true;
 					},
 					imgPreview: function(src) {
+						if(src.indexOf("http")==-1){
+							src=imgurl+src;
+						}
 						this.showImgPreviewSrc = src;
 						this.showImgPreview = true;
 					},
