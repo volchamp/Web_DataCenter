@@ -25,91 +25,9 @@ else
 }
 
 
-function webapi(method, parameter, fnSuccess, fnError, Async) {
-	parameter["random"]=Math.random();
-	var url = curl + method; //正式地址
-	//判断是否需要同步ajax
-	if(typeof(Async) == "undefined") {
-		Async = true;
-	}
-	$.ajax({
-		type: "post",
-		data: parameter,
-		dataType: 'json',
-		url: url,
-		// contentType:"application/x-www-form-urlencoded",
-		beforeSend: function(XMLHttpRequest) {
-			XMLHttpRequest.setRequestHeader("v_token", getCookie("v_token"));
-		},
-		crossDomain: true == !(document.all),
-		xhrFields: {
-			withCredentials: true
-		},
-		async: Async,
-		success: function(data) {
-			//服务器返回响应，根据响应结果，分析是否登录成功；
-			if(data.hasOwnProperty("result")) {
-				var index = JSON.stringify(data.result).indexOf('ERROR');
-				if(index > -1) {
-					if(data.hasOwnProperty("dsc")) {
-						if(JSON.stringify(data.dsc).indexOf("token过期") > -1) {
-							layer.msg("用户登录超时或在其他地方登录，", {
-								time: 20000,
-								shade: 0.6,
-								success: function(layero, index) {
-									var msg = layero.text();
-									var i = 5;
-									var timer = null;
-									var fn = function() {
-										layero.find(".layui-layer-content").text(msg + i + '秒后跳转登录页面');
-										if(!i) {
-											layer.close(index);
-											clearInterval(timer);
-										}
-										i--;
-									};
-									timer = setInterval(fn, 1000);
-									fn();
-								}
-							}, function() { //倒计时完成后需要执行的代码 
-								setTimeout(function() {
-									localStorage.clear();
-									var nowurl = window.top.location.toString();
-									if(nowurl.indexOf("layout") != -1 || nowurl.indexOf("Login") != -1) {
-										top.location.href = $.prefix() + "Login.html";
-									} else {
-										top.location.href = $.prefix() + "Index.html";
-									}
-								}, 5000);
-							});
-							return false;
-						} else {
-							fnSuccess(data);
-						}
-					} else {
-						fnSuccess(data);
-					}
-				} else {
-					fnSuccess(data);
-				}
-			} else {
-				fnSuccess(data);
-			}
-		},
-		complete: function(data) {
-			//alert("2342");
-		},
-		error: function(xhr, type, errorThrown) {
-			//异常处理；
-			fnError(xhr, type, errorThrown);
-		}
-	});
-}
-
-
 // var curlCos="http://127.0.0.1:8100/cosapi";
 
-function webApi(method, postType,parameter, fnSuccess, fnError, async) {
+function webApi(method,parameter, fnSuccess, fnError, async) {
 	var url = curl + method; //地址
 	//判断是否需要同步ajax
 	if (typeof (async) == "undefined") {
@@ -117,7 +35,7 @@ function webApi(method, postType,parameter, fnSuccess, fnError, async) {
 	}
 	// $.support.cors=true;
 	$.ajax({
-		type: postType,
+		type: "post",
 		data: JSON.stringify(parameter),
 		dataType: 'json',
 		contentType: "application/json; charset=utf-8",
@@ -198,6 +116,90 @@ function webapiOther(method, parameter, fnSuccess, fnError, async) {
 		complete: function (data) {
 		},
 		error: function (xhr, type, errorThrown) {
+			//异常处理；
+			fnError(xhr, type, errorThrown);
+		}
+	});
+}
+
+
+
+function webapi(method, parameter, fnSuccess, fnError, Async) {
+	parameter["random"]=Math.random();
+	var url = curl + method; //正式地址
+	//判断是否需要同步ajax
+	if(typeof(Async) == "undefined") {
+		Async = true;
+	}
+	$.ajax({
+		type: "post",
+		data: parameter,
+		dataType: 'json',
+		url: url,
+		
+		// contentType:"application/x-www-form-urlencoded",
+		beforeSend: function(XMLHttpRequest) {
+			XMLHttpRequest.setRequestHeader("v_token", getCookie("v_token"));
+		},
+		crossDomain: true == !(document.all),
+		xhrFields: {
+			withCredentials: true
+		},
+		async: Async,
+		success: function(data) {
+			//服务器返回响应，根据响应结果，分析是否登录成功；
+			if(data.hasOwnProperty("result")) {
+				var index = JSON.stringify(data.result).indexOf('ERROR');
+				if(index > -1) {
+					if(data.hasOwnProperty("dsc")) {
+						if(JSON.stringify(data.dsc).indexOf("token过期") > -1) {
+							layer.msg("用户登录超时或在其他地方登录，", {
+								time: 20000,
+								shade: 0.6,
+								success: function(layero, index) {
+									var msg = layero.text();
+									var i = 5;
+									var timer = null;
+									var fn = function() {
+										layero.find(".layui-layer-content").text(msg + i + '秒后跳转登录页面');
+										if(!i) {
+											layer.close(index);
+											clearInterval(timer);
+										}
+										i--;
+									};
+									timer = setInterval(fn, 1000);
+									fn();
+								}
+							}, function() { //倒计时完成后需要执行的代码 
+								setTimeout(function() {
+									localStorage.clear();
+									var nowurl = window.top.location.toString();
+									if(nowurl.indexOf("layout") != -1 || nowurl.indexOf("Login") != -1) {
+										top.location.href = $.prefix() + "Login.html";
+									} else {
+										top.location.href = $.prefix() + "Index.html";
+									}
+								}, 5000);
+							});
+							return false;
+						} else {
+							fnSuccess(data);
+						}
+					} else {
+						fnSuccess(data);
+					}
+				} else {
+					fnSuccess(data);
+				}
+			} else {
+				fnSuccess(data);
+			}
+		},
+		complete: function(data) {
+			//alert("2342");
+		},
+		error: function(xhr, type, errorThrown) {
 			//异常处理；
 			fnError(xhr, type, errorThrown);
 		}

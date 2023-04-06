@@ -58,7 +58,7 @@
 	<body>
 		<div id="app">
 			<template>
-				<!-- 截图发送 -->
+				<!-- 更换头像 -->
 				<div v-show="uploadAvatarVisible" class="avatar_window">
 					<div style="display: flex;">
 						<div style="flex: 1;"></div>
@@ -67,11 +67,21 @@
 					</div>
 					<div style="display: flex;flex-direction: column;align-items: center;width: 100%;height: 340px;">
 						<div style="flex: 1;width: 100%;padding: 10px 10px 10px 10px;">
-							<div class="info_head" :style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"
+							<div class="info_head" :style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 								@click="upload(userInfoData.userAvatar)"></div>
 						</div>
+						<img style="width: 100px;height: 100px;" :src="imgurl+avatarUrl" />
+
+						<el-upload class="upload-demo" :action="fileUploadUrl" :before-remove="beforeRemove" :limit="1"
+							:show-file-list="false" :file-list="fileList" :on-preview="filePreviewEvent"
+							:on-remove="fileRemoveEvent" :on-success="fileSuccessEvent" :on-error="fileErrorEvent"
+							:on-progress="fileProgressEvent" :before-upload="fileBeforeEvent"
+							:on-exceed="fileExceedEvent" accept=".jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PBG,.GIF">
+
+							<button @click="upload">上传头像</button>
+						</el-upload>
 						<div>
-							<button @click="change">确认更换</button>
+							<button @click="commit">确定</button>
 						</div>
 					</div>
 				</div>
@@ -88,7 +98,7 @@
 					<div
 						style="display: flex;flex-direction: row;justify-content: center;background-color: darkslategray;height: 200px;align-items: center;">
 
-						<div class="info_head" :style="{backgroundImage: 'url('+ userInfoData.userAvatar +')'}"
+						<div class="info_head" :style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 							@click="changeAvatar(userInfoData.userAvatar)" title="点击更换头像"></div>
 						<div>
 							<div><span style="font-size: 22px;color: white;">{{userInfoData.userName}}</span></div>
@@ -111,7 +121,7 @@
 		var vm = new Vue({
 			el: "#app",
 			data: {
-				uploadAvatarVisible: false, //是否显示个人资料设置页面
+				uploadAvatarVisible: false, //是否显示个人头像设置页面
 				uploadAvatarLoading: false,
 				userInfoData: { //当前登录人信息
 					userId: "", //当前登录用户账号
@@ -119,7 +129,10 @@
 					userName: "", //用户名
 					roleCodes: '', //角色id
 					userBgCover: '../im/images/bg1.jpg' //用户背景封面
-				}
+				},
+				fileUploadUrl: curl + '/attach/uploadAtt', //文件上传接口
+				fileList: [], //上传之后返回的文件路径列表
+				avatarUrl: "" //上传成功后的头像url相对路径
 			},
 			filters: {
 				formatAddr: function(addr) {
@@ -143,7 +156,7 @@
 				getUserInfo: function() { //获取用户信息
 					var that = this;
 					var signInputParms = {}
-					webapi("/user/getUser", signInputParms, function(data) {
+					webApi("/user/getUser", signInputParms, function(data) {
 						var result = data.result;
 						var msg = data.msg;
 						if (result == "SUCCESS") {
@@ -171,8 +184,77 @@
 				changeAvatar: function() {
 					this.uploadAvatarVisible = true;
 				},
-				change: function() {
+				upload: function() {
 
+				},
+				commit: function() {
+					//修改用户头像路径
+					var that = this;
+					var signInputParms = {
+						avartarUrl: this.avatarUrl
+					}
+					console.log(signInputParms);
+					webApi("/user/updateAvatar", signInputParms, function(data) {
+						var code = data.code;
+						var msg = data.msg;
+						if (code == 200) {
+							vm.getUserInfo();
+							that.$message({
+								message: '操作成功',
+								type: 'success'
+							});
+							that.uploadAvatarVisible = false;
+
+						} else {
+							alert(msg)
+							if (msg.indexOf("重新登录") != -1) {
+								//回到登录页
+								window.location.href = '../../login.html';
+							}
+						}
+					}, function(xhr, type, errorThrown) {
+						return;
+					})
+				},
+				filePreviewEvent(file) {
+
+				},
+				fileErrorEvent(err, file, fileList) {
+					this.showTipsW("图片发送失败咯，请刷新重试！");
+				},
+				fileProgressEvent(event, file, fileList) {},
+				fileBeforeEvent(file) {},
+				fileRemoveEvent(file, fileList) {
+					if (file.response.code == 200) {
+
+					} else {
+						this.$XModal.message({
+							message: '删除失败',
+							status: 'warning'
+						});
+					}
+				},
+				fileSuccessEvent(res, file, fileList) { //图片上传成功回调
+					console.log(res)
+					if (res.code == 200) {
+						var data = res.data;
+						var original = data.original;
+						var state = data.state;
+						var title = data.title;
+						var url = data.url;
+						var viewUrl = data.viewUrl;
+
+						vm.avatarUrl = viewUrl;
+
+					} else {
+						alert(res.msg);
+					}
+				},
+				fileExceedEvent(file, fileList) {
+					this.showTipsW("最多上传1张图片");
+				},
+				beforeRemove(file, fileList) {
+					return this.$confirm(`确定移除 ${ file.name }？`);
 				}
 			}
 		})
