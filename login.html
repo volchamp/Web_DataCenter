@@ -85,16 +85,11 @@
 				color: #d1c2d8;
 			}
 
-			.register {
-				width: 400px;
-				height: 450px;
-				background: #F9F9F9;
-				box-shadow: 0 0 8px rgba(0, 0, 0, .1);
-				border-radius: 4px;
-				overflow: hidden;
-				position: absolute;
-				right: 200px;
-				top: 200px;
+			.register_input {
+				border: none;
+				font-size: 16px;
+				background-color: rgba(255, 255, 255, 0);
+				border-bottom: 1px solid #F2F2F2;
 			}
 
 			input:-webkit-autofill {
@@ -121,35 +116,23 @@
 
 	<body>
 		<div id="login_box">
-			<!-- 注册 -->
-			<div class="register" v-show="showRegisterModal" style="display: none;">
-				<div style="display: flex;">
-					<div style="flex: 1;"></div>
-					<img @click="closeRegister" src="./img/close.png"
-						style="margin: 6px 12px 3px 0px;height: 20px;width: 20px;cursor: pointer;" />
-				</div>
-				<div class="mui-content" style="background: white;padding-bottom: cursor: pointer;100px;">
+			<template>
+				<!-- 注册模态框 -->
+				<vxe-modal ref="xModal" v-model="showRegisterModal" title="注册" style="z-index: 9999;" width="600"
+					:loading="false" resize destroy-on-close>
 					<div style="margin-bottom: 20px;margin-top: 5px;">
-						<div class="" style="">
-							<input v-model="registInfo.account" type="text" placeholder="请输入账号" class="mui-input-clear"
-								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
-						</div>
-						<div class="" style="">
-							<input v-model="registInfo.name" type="text" placeholder="请输入昵称" class="mui-input-clear"
-								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
-						</div>
-						<div class="" style="">
-							<input v-model="registInfo.password" type="password" placeholder="请输入登录密码"
-								class="mui-input-clear"
-								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
-						</div>
-						<div class="" style="">
-							<input v-model="registInfo.password_confirm" type="password" placeholder="请再次确认密码"
-								class="mui-input-clear"
-								style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
-						</div>
 
-						<div style="border-bottom: 1px solid #F2F2F2;margin-top: -15px;"></div>
+						<input v-model="registInfo.account" type="text" placeholder="请输入账号" 
+						 style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;"/>
+
+						<input v-model="registInfo.name" type="text" placeholder="请输入昵称" 
+						 style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;"/>
+
+						<input v-model="registInfo.password" type="password" placeholder="请输入登录密码" 
+						style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+
+						<input v-model="registInfo.password_confirm" type="password" placeholder="请再次确认密码"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
 
 					</div>
 
@@ -165,9 +148,9 @@
 					<div @click="regist" id='reg'
 						style="height: 50px;border-radius: 25px;margin: 40px 16px 10px 16px;background: cornflowerblue;color: white;text-align: center;padding-top: 15px;cursor: pointer;">
 						注 册</div>
+				</vxe-modal>
+			</template>
 
-				</div>
-			</div>
 
 			<h2>登录</h2>
 			<div id="form">
@@ -177,8 +160,8 @@
 				</div>
 				<div id="input_box">
 					<i class="fa fa-key" aria-hidden="true"></i>
-					<input id="pwd" class="" type="password" v-model="formData.user_pwd"
-						placeholder="请输入密码" @keyup.enter="handelSave($event,1)">
+					<input id="pwd" class="" type="password" v-model="formData.user_pwd" placeholder="请输入密码"
+						@keyup.enter="handelSave($event,1)">
 				</div>
 			</div>
 

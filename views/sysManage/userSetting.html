@@ -31,18 +31,21 @@
 		}
 
 		.bgCover {
-			height: 450px;
+			height: 420px;
 			background-size: 100%;
+			padding: 10px 0px 0px 10px;
+			display: flex;
+			flex-direction: column;
 		}
 
 		.info_text {
-			font-size: 13px;
-			color: black;
+			font-size: 14px;
+			color: grey;
 		}
 
 		.avatar_window {
-			width: 500px;
-			height: 500px;
+			width: 350px;
+			height: 480px;
 			background: #FFF;
 			box-shadow: 0 0 8px rgba(0, 0, 0, .1);
 			border: 1px solid lightgray;
@@ -52,6 +55,53 @@
 			left: 200px;
 			top: 30px;
 			z-index: 999;
+		}
+
+		.uploadBtn {
+			margin: 10px;
+			padding: 5px 10px 5px 10px;
+			border: 1px solid lightgray;
+			background-color: white;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+		}
+
+		.uploadBtn:hover {
+			border: 1px solid #4169EE;
+		}
+
+		#commit {
+			border: 1px solid #4A89FD;
+			background: #4A89F1;
+			color: white;
+			padding: 0 8px;
+			outline: 0;
+			height: 26px;
+			width: 80px;
+			margin-right: 15px;
+			cursor: pointer;
+		}
+
+		#commit:hover {
+			background: #4169EE;
+			color: #fff;
+			border: 1px solid #4169EE;
+		}
+
+		#cancel {
+			border: 1px solid lightgray;
+			background: white;
+			padding: 0 8px;
+			outline: 0;
+			height: 26px;
+			width: 80px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		#cancel:hover {
+			border: 1px solid #4169EE;
 		}
 	</style>
 
@@ -65,42 +115,61 @@
 						<img @click="closeUpload" src="../../static/img/close2.png"
 							style="margin: 3px 6px 0px 0px;height: 20px;width: 20px;cursor: pointer;" />
 					</div>
-					<div style="display: flex;flex-direction: column;align-items: center;width: 100%;height: 340px;">
-						<div style="flex: 1;width: 100%;padding: 10px 10px 10px 10px;">
-							<div class="info_head" :style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
+
+					<el-upload class="upload-demo" :action="fileUploadUrl" :before-remove="beforeRemove" :limit="1"
+						:show-file-list="false" :file-list="fileList" :on-preview="filePreviewEvent"
+						:on-remove="fileRemoveEvent" :on-success="fileSuccessEvent" :on-error="fileErrorEvent"
+						:on-progress="fileProgressEvent" :before-upload="fileBeforeEvent" :on-exceed="fileExceedEvent"
+						accept=".jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PBG,.GIF">
+
+						<button @click="upload" class="uploadBtn">
+							<img style="height: 19px;width: 19px;" src="../../static/img/upload.png" />
+							<span style="font-size: 15px;padding-left: 5px;">
+								上传本地照片
+							</span>
+						</button>
+					</el-upload>
+
+					<div style="display: flex;flex-direction: column;align-items: center;width: 100%;height: 360px;">
+						<!-- <div style="flex: 1;width: 100%;padding: 10px 10px 10px 10px;">
+							<div class="info_head"
+								:style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 								@click="upload(userInfoData.userAvatar)"></div>
-						</div>
-						<img style="width: 100px;height: 100px;" :src="imgurl+avatarUrl" />
+						</div> -->
+						<img style="width: 95%;height: 300px;" :src="avatarUrl | formatAvartarUrl" />
+					</div>
 
-						<el-upload class="upload-demo" :action="fileUploadUrl" :before-remove="beforeRemove" :limit="1"
-							:show-file-list="false" :file-list="fileList" :on-preview="filePreviewEvent"
-							:on-remove="fileRemoveEvent" :on-success="fileSuccessEvent" :on-error="fileErrorEvent"
-							:on-progress="fileProgressEvent" :before-upload="fileBeforeEvent"
-							:on-exceed="fileExceedEvent" accept=".jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PBG,.GIF">
-
-							<button @click="upload">上传头像</button>
-						</el-upload>
-						<div>
-							<button @click="commit">确定</button>
-						</div>
+					<div style="text-align: end;">
+						<button @click="commit" id="commit">确定</button>
+						<button @click="cancel" id="cancel">取消</button>
 					</div>
 				</div>
 			</template>
 
-			<div style="display: flex;width: 900px;height: 650px;">
+			<div style="display: flex;width: 850px;height: 650px;">
 				<!-- 左边 -->
 				<div style="flex: 1;display: flex;flex-direction: column;">
 					<div class="bgCover" :style="{backgroundImage: 'url('+ userInfoData.userBgCover +')'}">
-						<span style="color: white;font-size: 15px;">
-							更换封面
-						</span>
+						<div style="display: flex;align-items: center;cursor: pointer;" @click="changeBgCover">
+							<img style="height: 19px;width: 19px;" src="../../static/img/cover.png" />
+							<span style="color: white;font-size: 15px;">
+								更换封面
+							</span>
+						</div>
+						<!-- <div style="flex: 1;"></div> -->
+						<div style="flex: 1;display:flex;justify-content: flex-end;align-items: flex-end;">
+							<div
+								style="height: 70px;width: 70px;background:#808A87;opacity:0.5;display: flex;justify-content: center;align-items: center;">
+								<img style="height: 25px;width: 25px;" src="../../static/img/love.png" />
+							</div>
+						</div>
 					</div>
 					<div
-						style="display: flex;flex-direction: row;justify-content: center;background-color: darkslategray;height: 200px;align-items: center;">
+						style="display: flex;flex-direction: row;justify-content: center;background-color: darkslategray;height: 230px;align-items: center;">
 
 						<div class="info_head" :style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 							@click="changeAvatar(userInfoData.userAvatar)" title="点击更换头像"></div>
-						<div>
+						<div style="margin-left: 10px;">
 							<div><span style="font-size: 22px;color: white;">{{userInfoData.userName}}</span></div>
 							<div><span style="font-size: 14px;color: white;">编辑个性签名</span></div>
 						</div>
@@ -113,6 +182,7 @@
 					<div><span class="info_text">昵称:</span></div>
 					<div><span class="info_text">性别:</span></div>
 					<div><span class="info_text">年龄:</span></div>
+					<div><span class="info_text">地区:</span></div>
 				</div>
 			</div>
 		</div>
@@ -141,6 +211,12 @@
 					} else {
 						return '地址：' + addr;
 					}
+				},
+				formatAvartarUrl: function(url) {
+					//拼接一下图片服务器地址
+					if (url.indexOf("http://") == -1) {
+						return imgurl + url;
+					}
 				}
 			},
 			created() {
@@ -165,8 +241,7 @@
 							that.userInfoData.userName = userinfo.nickName;
 							if (userinfo.headUrl) {
 								that.userInfoData.userAvatar = userinfo.headUrl;
-							} else {
-								that.userInfoData.userAvatar = "../../static/img/logo_profile.png";
+								that.avatarUrl = userinfo.headUrl;
 							}
 
 						} else {
@@ -184,8 +259,14 @@
 				changeAvatar: function() {
 					this.uploadAvatarVisible = true;
 				},
+				changeBgCover: function() {
+
+				},
 				upload: function() {
 
+				},
+				cancel: function() {
+					this.uploadAvatarVisible = false;
 				},
 				commit: function() {
 					//修改用户头像路径

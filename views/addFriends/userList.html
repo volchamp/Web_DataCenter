@@ -188,11 +188,16 @@
 			},
 			methods: {
 				getUserList() {
-					var result = XEAjax.post(`${curl}/user/getUserList`, {
+					if(vm.lock.nodeNo==""){
+						return;
+					}
+					var that = this;
+					var signInputParms = {
 						page_size: vm.pageSize,
 						current_page: vm.currentPage,
 						keyword: (vm.lock.nodeNo).replace(/\s*/g, ""),
-					}).then(data => {
+					}
+					webApi("/user/getUserList", signInputParms, function(data) {
 						var code = data.code;
 						var msg = data.msg;
 						if (code == 200) {
@@ -202,7 +207,7 @@
 							var totalPage = data.totalPage;
 							var totalRow = data.totalRow;
 							var rows = data.rows;
-
+						
 							vm.lockList = [];
 							vm.lockList = rows;
 							vm.totalSize = totalRow;
@@ -213,12 +218,10 @@
 								status: 'warning'
 							});
 						}
-					}).catch(data => {
-						vm.$XModal.message({
-							message: "哦豁，出现异常，请刷新重试一下！",
-							status: 'warning'
-						})
-					});
+					}, function(xhr, type, errorThrown) {
+						layer.alert('获取用户信息出错!');
+						return;
+					})
 
 				},
 				remoteMethod(query) {
@@ -289,8 +292,6 @@
 								friend_id: row.userId
 							}).then(data => {
 								if (data.code == 200) {
-
-
 									_this.$XModal.message({
 										message: data.msg,
 										status: 'success'

@@ -592,18 +592,6 @@ ul.am-dropdown-content>li>a:hover {
 	padding: 10px 20px;
 }
 
-.me img {
-	float: right;
-	width: 34px;
-	height: 34px;
-	border-radius: 2px;
-}
-
-/* .me span { 
-    
-    background: #4A89FD;
-} */
-
 .me {
 	margin-top: 10px;
 	padding-left: 10px;
@@ -638,18 +626,6 @@ ul.am-dropdown-content>li>a:hover {
 	left: 100%;
 }
 
-/*other*/
-.other img {
-	float: right;
-	width: 34px;
-	height: 34px;
-	border-radius: 2px;
-}
-
-.other span {
-	float: right;
-	background: #9eea6a;
-}
 
 .other {
 	margin-top: 10px;
@@ -675,17 +651,6 @@ ul.am-dropdown-content>li>a:hover {
 	max-width: 80%;
 	border: 1px solid #ededed;
 	position: relative;
-}
-
-.other span:before {
-	content: "";
-	position: absolute;
-	top: 9px;
-	right: 100%;
-	border: 6px solid transparent;
-	border-right-color: #fff;
-	right: inherit;
-	right: 100%;
 }
 
 

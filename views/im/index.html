@@ -272,7 +272,7 @@
 						<div class="own_head am-dropdown-toggle"
 							:style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 							@click="userSetting"></div>
-						<div class="am-dropdown-content">
+						<!-- <div class="am-dropdown-content">
 							<div class="own_head_top">
 								<div class="own_head_top_text">
 									<p class="own_name">{{userInfoData.userName}}
@@ -290,7 +290,7 @@
 									<a href=""><img src="images/icon/head_2.png" /></a>
 								</div>
 							</div>
-						</div>
+						</div> -->
 					</div>
 					<!--三图标-->
 					<div class="sidestrip_icon">
@@ -467,7 +467,7 @@
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
 									<div style="flex: 1;"></div>
 									<div style="">
-										<img style="width: 120px;height: 150px;cursor: pointer;"
+										<img style="cursor: pointer;margin-right: 10px;max-width: 300px;"
 											:src="item.pictureUrl | formatImgUrl"
 											@click="imgPreview(imgurl+item.pictureUrl)" />
 									</div>
@@ -513,8 +513,8 @@
 								<!-- 图片 -->
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
 									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl" :title="chatDetail.nickName">
-									<div style="max-width: 20%;margin-left: 12px;">
-										<img style="width: 120px;height: 150px;cursor: pointer;"
+									<div style="margin-left: 12px;">
+										<img style="cursor: pointer;max-width: 300px;"
 											:src="item.pictureUrl | formatImgUrl"
 											@click="imgPreview(imgurl+item.pictureUrl)" />
 									</div>
