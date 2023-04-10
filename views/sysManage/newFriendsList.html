@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>好友请求</title>
+		<link rel="stylesheet" href="../../lib/element-ui/theme-chalk/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table/index.css">
+		<link rel="stylesheet" href="../../lib/vxe-table-plugin-element/style.css">
+		<link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="../../static/css/expand-table.css" />
+		<link rel="stylesheet" type="text/css" href="../../static/css/common.css">
+
+		<script type="text/javascript" src="../../lib/vue/vue.js"></script>
+		<script type="text/javascript" src="../../lib/xe-utils/xe-utils.js"></script>
+		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
+		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
+		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
+		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../static/js/webApi.js"></script>
+	</head>
+	<body>
+		<div id="app">
+
+		</div>
+
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					uploadAvatarVisible: false, //是否显示个人头像设置页面
+					uploadAvatarLoading: false,
+					userInfoData: { //当前登录人信息
+						userId: "", //当前登录用户账号
+						userAvatar: "", //用户头像
+						userName: "", //用户名
+						roleCodes: '', //角色id
+						userBgCover: '../im/images/bg1.jpg' //用户背景封面
+					},
+					fileUploadUrl: curl + '/attach/uploadAtt', //文件上传接口
+					fileList: [], //上传之后返回的文件路径列表
+					avatarUrl: "" //上传成功后的头像url相对路径
+				},
+				filters: {
+					formatAddr: function(addr) {
+						if (addr == null) {
+							return "";
+						} else {
+							return '地址：' + addr;
+						}
+					},
+					formatAvartarUrl: function(url) {
+						//拼接一下图片服务器地址
+						if (url.indexOf("http://") == -1) {
+							return imgurl + url;
+						}
+					}
+				},
+				created() {
+
+				},
+				mounted() {
+					this.getUserInfo();
+				},
+				methods: {
+					closeUpload: function() {
+						this.uploadAvatarVisible = false;
+					},
+					getUserInfo: function() { //获取用户信息
+						var that = this;
+						var signInputParms = {}
+						webApi("/user/getUser", signInputParms, function(data) {
+							var result = data.result;
+							var msg = data.msg;
+							if (result == "SUCCESS") {
+								var userinfo = data.userinfo;
+								that.userInfoData.userId = userinfo.userId;
+								that.userInfoData.userName = userinfo.nickName;
+								if (userinfo.headUrl) {
+									that.userInfoData.userAvatar = userinfo.headUrl;
+									that.avatarUrl = userinfo.headUrl;
+								}
+
+							} else {
+								alert(msg)
+								if (msg.indexOf("重新登录") != -1) {
+									//回到登录页
+									window.location.href = '../../login.html';
+								}
+							}
+						}, function(xhr, type, errorThrown) {
+							layer.alert('获取用户信息出错!');
+							return;
+						})
+					},
+					changeAvatar: function() {
+						this.uploadAvatarVisible = true;
+					},
+					changeBgCover: function() {
+
+					},
+					upload: function() {
+
+					},
+					cancel: function() {
+						this.uploadAvatarVisible = false;
+					},
+					commit: function() {
+						//修改用户头像路径
+						var that = this;
+						var signInputParms = {
+							avartarUrl: this.avatarUrl
+						}
+						console.log(signInputParms);
+						webApi("/user/updateAvatar", signInputParms, function(data) {
+							var code = data.code;
+							var msg = data.msg;
+							if (code == 200) {
+								vm.getUserInfo();
+								that.$message({
+									message: '操作成功',
+									type: 'success'
+								});
+								that.uploadAvatarVisible = false;
+
+							} else {
+								alert(msg)
+								if (msg.indexOf("重新登录") != -1) {
+									//回到登录页
+									window.location.href = '../../login.html';
+								}
+							}
+						}, function(xhr, type, errorThrown) {
+							return;
+						})
+					}
+				}
+			})
+		</script>
+	</body>
+</html>
