@@ -174,7 +174,7 @@ ul li {
 	margin-left: 20px;
 }
 
-#si_1 {
+/* #si_1 {
 	background: url(../images/icon/head_2.png) no-repeat;
 }
 
@@ -184,6 +184,9 @@ ul li {
 
 #si_3 {
 	background: url(../images/icon/head_4.png) no-repeat;
+} */
+#si_4 {
+	margin-left: -2px;
 }
 
 .sidestrip_icon {
@@ -200,9 +203,9 @@ ul li {
 	cursor: pointer;
 }
 
-.active {
+/* .active {
 	background: url(../images/icon/head_2_1.png) no-repeat !important;
-}
+} */
 
 .sidestrip_bc {
 	background: url(../images/icon/head_5.png) no-repeat;
