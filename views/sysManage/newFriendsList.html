@@ -19,9 +19,89 @@
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
 		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
 		<script type="text/javascript" src="../../static/js/webApi.js"></script>
+		<style>
+			.user_head {
+				height: 40px;
+				width: 40px;
+				border-radius: 2px;
+			}
+
+			.user_name {
+				color: #333;
+				font-size: 14px;
+			}
+
+			.user_message {
+				color: #999;
+				font-size: 12px;
+			}
+
+			#accept {
+				border: 1px solid #4A89FD;
+				background: #4A89F1;
+				color: white;
+				padding: 0 8px;
+				outline: 0;
+				height: 26px;
+				width: 80px;
+				margin-right: 8px;
+				cursor: pointer;
+			}
+
+			#accept:hover {
+				background: #4169EE;
+				color: #fff;
+				border: 1px solid #4169EE;
+			}
+
+			#reject {
+				border: 1px solid lightgray;
+				background: white;
+				padding: 0 8px;
+				outline: 0;
+				height: 26px;
+				width: 80px;
+				margin-right: 10px;
+				cursor: pointer;
+			}
+
+			#reject:hover {
+				border: 1px solid #4169EE;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="app">
+			<!-- 			<div style="display: flex;border-bottom: 1px solid lightgray;align-items: center;padding: 5px;">
+				<img class="user_head" src="http://124.222.4.40:8091/files//default_avatar.jpeg">
+				<div style="display: flex;flex-direction: column;margin-left: 10px;flex: 1;">
+					<p class="user_name">麻子</p>
+					<p class="user_message">123456</p>
+				</div>
+				<div style=""><p class="user_message">2023/04/10 23:36</p></div>
+				<div style="margin-left: 20px;">
+					<button @click="accept" id="accept">同意</button>
+					<button @click="reject" id="reject">拒绝</button>
+				</div>
+			</div> -->
+			<div v-for="(item,index) in applyList"
+				style="display: flex;border-bottom: 1px solid lightgray;align-items: center;padding: 5px;">
+				<img class="user_head" :src="item.headUrl | formatAvartarUrl">
+				<div style="display: flex;flex-direction: column;margin-left: 10px;flex: 1;">
+					<p class="user_name">{{item.nickName}}</p>
+					<p class="user_message">{{item.friendMessage}}</p>
+				</div>
+				<div style="">
+					<p class="user_message">{{item.createTime | formatDate}}</p>
+				</div>
+				<div style="margin-left: 20px;">
+					<button v-if="item.friendStatus==0" @click="accept(item, index)" id="accept">同意</button>
+					<button v-if="item.friendStatus==0" @click="reject(item, index)" id="reject">拒绝</button>
+					<div v-if="item.friendStatus==1">已添加</div>
+					<div v-if="item.friendStatus==3">已拒绝</div>
+					<div v-if="item.friendStatus==2">已拉入黑名单</div>
+				</div>
+			</div>
 
 		</div>
 
@@ -29,8 +109,6 @@
 			var vm = new Vue({
 				el: "#app",
 				data: {
-					uploadAvatarVisible: false, //是否显示个人头像设置页面
-					uploadAvatarLoading: false,
 					userInfoData: { //当前登录人信息
 						userId: "", //当前登录用户账号
 						userAvatar: "", //用户头像
@@ -38,17 +116,35 @@
 						roleCodes: '', //角色id
 						userBgCover: '../im/images/bg1.jpg' //用户背景封面
 					},
-					fileUploadUrl: curl + '/attach/uploadAtt', //文件上传接口
-					fileList: [], //上传之后返回的文件路径列表
-					avatarUrl: "" //上传成功后的头像url相对路径
+					applyList: [], //好友申请列表
 				},
 				filters: {
-					formatAddr: function(addr) {
-						if (addr == null) {
-							return "";
+					//局部过滤器
+					formatTime: function(date) {
+						var d = new Date(date);
+						var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1);
+						var day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+						var hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+						var min = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+						var sec = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+
+						var times = "";
+						if (vm.isToday(d.getFullYear() + '-' + month + '-' + day)) {
+							times = hours + ':' + min + ':' + sec;
 						} else {
-							return '地址：' + addr;
+							times = d.getFullYear() + '/' + month + '/' + day;
 						}
+						return times;
+					},
+					formatDate: function(date) { //格式化时间（标准时间）
+						var d = new Date(date);
+						var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1);
+						var day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+						var hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+						var min = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+						var sec = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+						var times = d.getFullYear() + '-' + month + '-' + day + " " + hours + ':' + min + ':' + sec;
+						return times;
 					},
 					formatAvartarUrl: function(url) {
 						//拼接一下图片服务器地址
@@ -61,11 +157,70 @@
 
 				},
 				mounted() {
-					this.getUserInfo();
+					// this.getUserInfo();
+					this.getNewFriendList();
 				},
 				methods: {
-					closeUpload: function() {
-						this.uploadAvatarVisible = false;
+					accept: function(item, index) {
+						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝
+						//同意 1
+						var that = this;
+						var signInputParms = {
+							id: item.id, //好友申请记录ID
+							friend_id: item.userId, //好友申请人id
+							friend_status: 1, 
+							friend_message: "" //留言
+						}
+						webApi("/user/newFrendManage", signInputParms, function(data) {
+							var code = data.code;
+							var msg = data.msg;
+							var data = data.data;
+							if (code == "200") {
+								alert(msg)
+								that.getNewFriendList();
+							} else {
+								alert(msg);
+								if (msg.indexOf("重新登录") != -1) {
+									//回到登录页
+									window.location.href = '../../login.html';
+								}
+							}
+						}, function(xhr, type, errorThrown) {
+							layer.alert('操作出错!');
+							return;
+						})
+					},
+					reject: function(item, index) {
+						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝
+						//拒绝 3
+						var that = this;
+						var signInputParms = {
+							id: item.id, //好友申请记录ID
+							friend_id: item.userId, //好友申请人id
+							friend_status: 3, 
+							friend_message: "" //留言
+						}
+						webApi("/user/newFrendManage", signInputParms, function(data) {
+							var code = data.code;
+							var msg = data.msg;
+							var data = data.data;
+							if (code == "200") {
+								alert(msg);
+								that.getNewFriendList();
+							} else {
+								alert(msg)
+								if (msg.indexOf("重新登录") != -1) {
+									//回到登录页
+									window.location.href = '../../login.html';
+								}
+							}
+						}, function(xhr, type, errorThrown) {
+							layer.alert('操作出错!');
+							return;
+						})
+					},
+					applyClick: function(item, index) {
+
 					},
 					getUserInfo: function() { //获取用户信息
 						var that = this;
@@ -94,36 +249,15 @@
 							return;
 						})
 					},
-					changeAvatar: function() {
-						this.uploadAvatarVisible = true;
-					},
-					changeBgCover: function() {
-
-					},
-					upload: function() {
-
-					},
-					cancel: function() {
-						this.uploadAvatarVisible = false;
-					},
-					commit: function() {
-						//修改用户头像路径
+					getNewFriendList: function() { //获取好友申请列表
 						var that = this;
-						var signInputParms = {
-							avartarUrl: this.avatarUrl
-						}
-						console.log(signInputParms);
-						webApi("/user/updateAvatar", signInputParms, function(data) {
+						var signInputParms = {}
+						webApi("/user/getNewFriendList", signInputParms, function(data) {
 							var code = data.code;
 							var msg = data.msg;
-							if (code == 200) {
-								vm.getUserInfo();
-								that.$message({
-									message: '操作成功',
-									type: 'success'
-								});
-								that.uploadAvatarVisible = false;
-
+							var data = data.data;
+							if (code == "200") {
+								that.applyList = data;
 							} else {
 								alert(msg)
 								if (msg.indexOf("重新登录") != -1) {
@@ -132,9 +266,11 @@
 								}
 							}
 						}, function(xhr, type, errorThrown) {
+							layer.alert('获取信息出错!');
 							return;
 						})
 					}
+
 				}
 			})
 		</script>

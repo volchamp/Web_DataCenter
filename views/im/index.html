@@ -177,11 +177,11 @@
 	<body>
 		<div class="box" id="app">
 			<!-- 好友请求管理弹窗 -->
-			<el-dialog :visible.sync="newFriendsVisible" title="新朋友" width="80%" v-loading="newFriendsLoading"
+			<el-dialog :visible.sync="newFriendsVisible" title="新朋友" width="50%" v-loading="newFriendsLoading"
 				element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
 				element-loading-background="rgba(0, 0, 0, 0.7)">
 				<iframe id="newFriendsframe" src="../sysManage/newFriendsList.html"
-					style="width:100%;height: 700px;"></iframe>
+					style="width:100%;height: 600px;"></iframe>
 			</el-dialog>
 			<!-- 添加好友弹窗 -->
 			<el-dialog :visible.sync="addFriendsVisible" title="添加好友" width="80%" v-loading="addFriendsLoading"
