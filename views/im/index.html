@@ -287,7 +287,10 @@
 						<a id="si_1" @click="si1Click" title="会话列表" :style="{background: 'url('+ si1BgIcon +') no-repeat'}"></a>
 						<a id="si_2" @click="si2Click" title="通讯录" :style="{background: 'url('+ si2BgIcon +') no-repeat'}"></a>
 						<a id="si_3" @click="si3Click" title="收藏" :style="{background: 'url('+ si3BgIcon +') no-repeat'}"></a>
+						<el-badge v-if="newFriendApplyNum!=0" :value="newFriendApplyNum" :max="99" style="float: right;margin-right: -8px;">
+						</el-badge>
 						<a id="si_4" @click="si4Click" title="新朋友" :style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a>
+						<!-- <a id="si_4" @click="si4Click" title="新朋友" :style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a> -->
 					</div>
 
 					<!--底部扩展键-->
@@ -330,7 +333,7 @@
 							<div v-for="(item,index) in chatList">
 								<li :class="{user_active:changeChatBackground==index}" @click="chatClick(item,index)">
 									<el-badge v-if="item.friendId!=chatDetail.friendId&&item.unreadcount!=0"
-										:value="item.unreadcount" :max="99" class="item" style="float: left;">
+										:value="item.unreadcount" :max="99" class="" style="float: left;">
 										<div class="user_head">
 											<img :src="item.headUrl | formatAvartarUrl" />
 										</div>
@@ -674,7 +677,8 @@
 					submitLoading: false,
 					isShowSysManage: false, //是否显示系统管理菜单
 					fileName: "", //文件名称
-					fileDownloadUrl: "" //文件下载地址
+					fileDownloadUrl: "" ,//文件下载地址
+					newFriendApplyNum:0//好友申请数量
 				},
 				filters: {
 					//局部过滤器
@@ -726,6 +730,7 @@
 					this.getUserRole();
 					this.getCusMsgLatestOneList();
 					this.getCusList();
+					this.getFriendApplyNum();
 
 					//清空聊天列表第一个默认选中的人未读消息数
 					setTimeout(function() {
@@ -822,6 +827,27 @@
 								return "女";
 								break;
 						}
+					},
+					getFriendApplyNum: function() { //获取好友申请数量
+						var that = this;
+						var signInputParms = {}
+						webApi("/friend/getFriendApplyNum", signInputParms, function(data) {
+							var code = data.code;
+							var msg = data.msg;
+							var data = data.data;
+							if (code == "200") {
+								that.newFriendApplyNum = data;
+							} else {
+								alert(msg)
+								if (msg.indexOf("重新登录") != -1) {
+									//回到登录页
+									window.location.href = '../../login.html';
+								}
+							}
+						}, function(xhr, type, errorThrown) {
+							layer.alert('获取信息出错!');
+							return;
+						})
 					},
 					deleteFriend(row) {
 						//好友id
@@ -1073,6 +1099,7 @@
 						console.log("收到消息：" + data);
 						var obj = JSON.parse(data);
 						var sendUser = obj.sendUser;
+						var contentType=obj.contentType;
 						if (obj.sendUser == this.userInfoData.userId) {
 							//如果返回的数据发送人是当前登录人，则清空输入框
 							this.msgContent = "";
@@ -1084,6 +1111,10 @@
 						setTimeout(function() {
 							vm.updateCusMsgLatestOneList();
 						}, 1000)
+						
+						if(contentType==6){
+							this.getFriendApplyNum();
+						}
 					},
 					merchantmsg() { //调用此接口发起聊天或回复消息
 						var contentType = this.contentType;

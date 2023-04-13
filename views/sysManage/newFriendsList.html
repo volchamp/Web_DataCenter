@@ -171,7 +171,7 @@
 							friend_status: 1, 
 							friend_message: "" //留言
 						}
-						webApi("/user/newFrendManage", signInputParms, function(data) {
+						webApi("/friend/newFrendManage", signInputParms, function(data) {
 							var code = data.code;
 							var msg = data.msg;
 							var data = data.data;
@@ -200,13 +200,14 @@
 							friend_status: 3, 
 							friend_message: "" //留言
 						}
-						webApi("/user/newFrendManage", signInputParms, function(data) {
+						webApi("/friend/newFrendManage", signInputParms, function(data) {
 							var code = data.code;
 							var msg = data.msg;
 							var data = data.data;
 							if (code == "200") {
 								alert(msg);
 								that.getNewFriendList();
+								that.$emit('getFriendApplyNum');
 							} else {
 								alert(msg)
 								if (msg.indexOf("重新登录") != -1) {
@@ -252,7 +253,7 @@
 					getNewFriendList: function() { //获取好友申请列表
 						var that = this;
 						var signInputParms = {}
-						webApi("/user/getNewFriendList", signInputParms, function(data) {
+						webApi("/friend/getNewFriendList", signInputParms, function(data) {
 							var code = data.code;
 							var msg = data.msg;
 							var data = data.data;

@@ -350,7 +350,7 @@
 					}
 					this.$XModal.confirm('您确定删除该用户吗？').then(type => {
 						if (type == "confirm") {
-							XEAjax.post(`${curl}/user/deleteUser`, {
+							XEAjax.post(`${curl}/friend/deleteUser`, {
 								user_id: row.userId
 							}).then(data => {
 								console.log(data.code)
