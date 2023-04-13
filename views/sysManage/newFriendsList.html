@@ -97,6 +97,7 @@
 				<div style="margin-left: 20px;">
 					<button v-if="item.friendStatus==0" @click="accept(item, index)" id="accept">同意</button>
 					<button v-if="item.friendStatus==0" @click="reject(item, index)" id="reject">拒绝</button>
+					<button v-if="item.friendStatus==0" @click="ignore(item, index)" id="ignore">忽略</button>
 					<div v-if="item.friendStatus==1">已添加</div>
 					<div v-if="item.friendStatus==3">已拒绝</div>
 					<div v-if="item.friendStatus==2">已拉入黑名单</div>
@@ -207,7 +208,7 @@
 							if (code == "200") {
 								alert(msg);
 								that.getNewFriendList();
-								that.$emit('getFriendApplyNum');
+								that.$emit('close');
 							} else {
 								alert(msg)
 								if (msg.indexOf("重新登录") != -1) {
@@ -219,6 +220,9 @@
 							layer.alert('操作出错!');
 							return;
 						})
+					},
+					ignore: function(item, index) {
+						this.$emit('getFriendApplyNum');
 					},
 					applyClick: function(item, index) {
 
