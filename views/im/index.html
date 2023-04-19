@@ -846,14 +846,20 @@
 							if (code == "200") {
 								that.newFriendApplyNum = data;
 							} else {
-								alert(msg)
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
 								if (msg.indexOf("重新登录") != -1) {
 									//回到登录页
 									window.location.href = '../../login.html';
 								}
 							}
 						}, function(xhr, type, errorThrown) {
-							layer.alert('获取信息出错!');
+							that.$XModal.alert({
+								message: '请求出错!',
+								status: 'error'
+							})
 							return;
 						})
 					},
