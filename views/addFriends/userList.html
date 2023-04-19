@@ -264,8 +264,9 @@
 					var that = this;
 					var signInputParms = {
 						friend_id: this.friend_id,
-						friend_message: this.mesage
+						friend_message: this.message
 					}
+					console.log(signInputParms);
 					webApi("/friend/addUser", signInputParms, function(data) {
 						var code = data.code;
 						var msg = data.msg;
