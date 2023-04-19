@@ -41,12 +41,28 @@
 
 	<body>
 		<el-container id="app">
+			<template>
+				<!-- 添加好友模态框 -->
+				<vxe-modal ref="xModal" v-model="showApplyModal" title="添加好友" width="600"
+					:loading="false" resize destroy-on-close>
+					<div style="text-align: center;">
+
+						<vxe-textarea v-model="message" placeholder="输入留言..." maxlength="100"
+							show-word-count></vxe-textarea>
+
+						<vxe-button status="primary" content="添加好友" @click="apply"
+							style="margin-top: 30px;"></vxe-button>
+					</div>
+
+				</vxe-modal>
+			</template>
+
 			<el-main>
 				<template>
-					<el-form :inline="true" :modle="lock" label-width="100px" label-position="right"
+					<el-form :inline="true" :modle="friend" label-width="100px" label-position="right"
 						style="min-height: 20px;border: 1px solid #e8eaec;padding: 5px;">
 						<el-form-item label="搜索关键字">
-							<el-input v-model="lock.nodeNo" placeholder="支持账号/姓名/手机号关键字查询" style="width: 300px;">
+							<el-input v-model="friend.keyword" placeholder="支持账号/姓名/手机号关键字查询" style="width: 300px;">
 							</el-input>
 						</el-form-item>
 
@@ -58,7 +74,7 @@
 				</template>
 
 				<!-- 表格部分 -->
-				<vxe-grid border resizable show-overflow max-height="600" header-align="center" :data="lockList"
+				<vxe-grid border resizable show-overflow max-height="600" header-align="center" :data="userList"
 					:toolbar="tableToolbar" @toolbar-button-click="toolbarButtonClickEvent">
 					</vxe-table-column>
 					<vxe-table-column type="seq" width="60" title="序号" fixed="left" headerAlign="center" align="center">
@@ -71,7 +87,7 @@
 
 					<vxe-table-column field="caozuo" align="center" width="520" title="操作">
 						<template v-slot="{row}">
-							<vxe-button type="text" content="添加好友" icon="fa fa-hand-pointer-o" @click="unBindLock(row)"
+							<vxe-button type="text" content="添加好友" icon="fa fa-hand-pointer-o" @click="add(row)"
 								title="添加好友" style="color:#3c8ddb;">
 							</vxe-button>
 							<vxe-button type="text" content="查看日志" style="display: none;" icon="fa fa-leanpub"
@@ -99,25 +115,20 @@
 		var vm = new Vue({
 			el: "#app",
 			data: {
+				friend_id: "", //选中的用户ID
+				message: "", //留言
 				userInfoData: { //当前登录人信息
 					userId: null, //当前登录用户账号（userCode）
 					userAvatar: "", //用户头像
 					userName: "", //用户名
 					roleCodes: '' //角色id
 				},
-				lock: {
-					lockStatus: '',
-					houseName: '',
-					houseId: '',
-					roomId: '',
-					roomName: ' ',
+				friend: {
 					lockNo: '',
-					nodeNo: ''
+					keyword: ''
 				},
-				logData: [],
-				list: [],
-				lockList: [], //列表
-				guide: false,
+				showApplyModal: false,
+				userList: [], //列表
 				tableHeight: '100%',
 				tablePage: {
 					perfect: true,
@@ -134,12 +145,9 @@
 				totalSize: 0, //总条数
 				currentPage: 1,
 				pageSize: 10,
-				showModalUnlockHis: false,
 				submitLoading: false,
-				showModalLog: false,
-				operType: "list",
 				totalPageHis: 0,
-				totalSizeHis: 0, 
+				totalSizeHis: 0,
 				currentPageHis: 1,
 				pageSizeHis: 10,
 				pageSizeLog: 10,
@@ -184,18 +192,17 @@
 			created() {
 				// this.userInfoData.userId = getUrlParam("user_id");
 			},
-			mounted() {
-			},
+			mounted() {},
 			methods: {
 				getUserList() {
-					if(vm.lock.nodeNo==""){
+					if (vm.friend.keyword == "") {
 						return;
 					}
 					var that = this;
 					var signInputParms = {
 						page_size: vm.pageSize,
 						current_page: vm.currentPage,
-						keyword: (vm.lock.nodeNo).replace(/\s*/g, ""),
+						keyword: (vm.friend.keyword).replace(/\s*/g, ""),
 					}
 					webApi("/user/getUserList", signInputParms, function(data) {
 						var code = data.code;
@@ -207,9 +214,9 @@
 							var totalPage = data.totalPage;
 							var totalRow = data.totalRow;
 							var rows = data.rows;
-						
-							vm.lockList = [];
-							vm.lockList = rows;
+
+							vm.userList = [];
+							vm.userList = rows;
 							vm.totalSize = totalRow;
 							vm.totalPage = totalPage;
 						} else {
@@ -219,40 +226,13 @@
 							});
 						}
 					}, function(xhr, type, errorThrown) {
-						layer.alert('获取用户信息出错!');
+						that.$XModal.alert({
+							message: '获取用户信息出错!',
+							status: 'error'
+						})
 						return;
 					})
 
-				},
-				remoteMethod(query) {
-					if (query !== '') {
-						this.loading = true;
-						setTimeout(() => {
-							this.loading = false;
-							this.roomTypeList = this.list.filter(item => {
-								return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
-							});
-						}, 200);
-					}
-				},
-				remoteMethod(query) {
-					if (query !== '') {
-						this.loading = true;
-						this.getHouseInfo(query);
-					} else {
-						this.getHouseInfo('');
-					}
-				},
-				selectChange(Command) {
-					//this.getRoomInfo(Command.hId);
-					this.lockModalData.city = Command.city;
-					this.lockModalData.hOutName = Command.hOutName;
-					this.lockModalData.h_id = Command.hId;
-					this.lockModalData.org_id = Command.orgId;
-					this.lockModalData.h_out_id = Command.hOutId;
-				},
-				selectChangeRoom(value) {
-					this.lockModalData.house_no = value;
 				},
 				formatSex({
 					cellValue
@@ -276,34 +256,41 @@
 					var times = d.getFullYear() + '-' + month + '-' + day + " " + hours + ':' + min + ':' + sec;
 					return times;
 				},
-				unBindLock(row) {
-					var _this = this;
-					// var user_id = this.userInfoData.userId;
-					// if (user_id == null || user_id == "") {
-					// 	_this.$XModal.message({
-					// 		message: "获取用户信息失败，请刷新重试",
-					// 		status: 'warning'
-					// 	})
-					// 	return;
-					// }
-					this.$XModal.confirm('您确定添加他为好友吗？').then(type => {
-						if (type == "confirm") {
-							XEAjax.post(`${curl}/friend/addUser`, {
-								friend_id: row.userId
-							}).then(data => {
-								if (data.code == 200) {
-									_this.$XModal.message({
-										message: data.msg,
-										status: 'success'
-									})
-								} else {
-									_this.$XModal.message({
-										message: data.msg,
-										status: 'warning'
-									})
-								}
+				add(row) {
+					this.friend_id = row.userId;
+					this.showApplyModal = true;
+				},
+				apply: function() {
+					var that = this;
+					var signInputParms = {
+						friend_id: this.friend_id,
+						friend_message: this.mesage
+					}
+					webApi("/friend/addUser", signInputParms, function(data) {
+						var code = data.code;
+						var msg = data.msg;
+						if (code == "200") {
+							that.$XModal.alert({
+								message: msg,
+								status: 'success'
 							})
+							that.showApplyModal=false;
+						} else {
+							that.$XModal.alert({
+								message: msg,
+								status: 'warning'
+							})
+							if (msg.indexOf("重新登录") != -1) {
+								//回到登录页
+								window.location.href = '../../login.html';
+							}
 						}
+					}, function(xhr, type, errorThrown) {
+						that.$XModal.alert({
+							message: '操作出错!',
+							status: 'error'
+						})
+						return;
 					})
 				},
 				toolbarButtonClickEvent({
@@ -318,57 +305,6 @@
 							break;
 					}
 				},
-				goDealTask(dataUrl, menuName) {
-					var panelUrl = window.frameElement.getAttribute('data-id'),
-						dataIndex = Math.random() * 100,
-						flag = true;
-					if (dataUrl == undefined || $.trim(dataUrl).length == 0) return false;
-					var topWindow = $(window.parent.document);
-					// 选项卡菜单已存在
-					$('.menuTab', topWindow).each(function() {
-						if ($(this).data('id') == dataUrl) {
-							if (!$(this).hasClass('active')) {
-								$(this).addClass('active').siblings('.menuTab').removeClass('active');
-								$('.page-tabs-content').animate({
-									marginLeft: ""
-								}, "fast");
-								// 显示tab对应的内容区
-								$('.mainContent .app_iframe', topWindow).each(function() {
-									if ($(this).data('id') == dataUrl) {
-										$(this).show().siblings('.app_iframe').hide();
-										return false;
-									}
-								});
-							}
-							flag = false;
-							return false;
-						}
-					});
-					// 选项卡菜单不存在
-					if (flag) {
-						var str = '<a href="javascript:;" class="active menuTab" data-id="' + dataUrl +
-							'" data-panel="' + panelUrl +
-							'">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
-						$('.menuTab', topWindow).removeClass('active');
-
-						// 添加选项卡对应的iframe
-						var str1 = '<iframe class="app_iframe" name="iframe' + dataIndex +
-							'" width="100%" height="100%" src="' +
-							dataUrl + '" frameborder="0" data-id="' + dataUrl + '" data-panel="' + panelUrl +
-							'" seamless></iframe>';
-						$('.mainContent', topWindow).find('iframe.app_iframe').hide().parents('.mainContent').append(
-							str1);
-
-						window.parent.$.modal.loading("数据加载中，请稍后...");
-						$('.mainContent iframe:visible', topWindow).load(function() {
-							window.parent.$.modal.closeLoading();
-						});
-
-						// 添加选项卡
-						$('.menuTabs .page-tabs-content', topWindow).append(str);
-					}
-					return false;
-				},
 				handleSizeChangeHis(val) {
 					this.pageSizeHis = val;
 					this.unlockHis(vm.lockNoHis)
@@ -382,24 +318,12 @@
 				}) {
 					return XEUtils.toDateString(cellValue, 'yyyy-MM-dd HH:mm:ss');
 				},
-				remoteOpenLock(row) {
-					var lock_no = row.lockNo;
-					this.remoteData.lockNoRemote = lock_no;
-					this.showModalRemote = true;
-				},
-				lookLog(row) {
-					this.showModalLog = true;
-					this.getLockLog(row.lockNo);
-				},
 				query() {
 					vm.currentPage = 1;
 					this.getUserList();
 				},
 				bindLock() {
 					this.showModallock = true;
-				},
-				repair() {
-					this.guide = true;
 				},
 				handleSizeChange(val) {
 					this.pageSize = val;

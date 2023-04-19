@@ -40,21 +40,19 @@
 			}
 
 			#login_box h2 {
-				/* color: #e8e7b730; */
 				color: #d5d5d5;
 				margin-top: 5%;
 			}
 
-			#login_box #form #input_box {
+			#input_box {
 				margin-top: 5%;
 			}
 
-			#login_box #form #input_box i {
-				/* color: #e8e7b730; */
+			#input_box i {
 				color: #d5d5d5;
 			}
 
-			#login_box #form #input_box input {
+			#input_box input {
 				border: 0;
 				width: 60%;
 				font-size: 16px;
@@ -65,25 +63,6 @@
 				margin-top: 10px;
 			}
 
-			#login_box button {
-				margin-top: 50px;
-				width: 40%;
-				height: 35px;
-				border-radius: 10px;
-				border: 0;
-				color: #fff;
-				font-size: 16px;
-				background-image: linear-gradient(to top, #30324d 0%, #5f6298 100%);
-			}
-
-			#login_box #Sign {
-				margin-top: 45%;
-				margin-left: 60%;
-			}
-
-			#login_box #Sign a {
-				color: #d1c2d8;
-			}
 
 			.register_input {
 				border: none;
@@ -118,18 +97,26 @@
 		<div id="login_box">
 			<template>
 				<!-- 注册模态框 -->
-				<vxe-modal ref="xModal" v-model="showRegisterModal" title="注册" style="z-index: 9999;" width="600"
-					:loading="false" resize destroy-on-close>
+				<vxe-modal ref="xModal" v-model="showRegisterModal" title="注册" width="600" :loading="false" resize
+					destroy-on-close>
 					<div style="margin-bottom: 20px;margin-top: 5px;">
 
-						<input v-model="registInfo.account" type="text" placeholder="请输入账号" 
-						 style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;"/>
+						<input v-model="registInfo.account" type="text" placeholder="请输入账号"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
 
-						<input v-model="registInfo.name" type="text" placeholder="请输入昵称" 
-						 style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;"/>
+						<input v-model="registInfo.name" type="text" placeholder="请输入昵称"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
 
-						<input v-model="registInfo.password" type="password" placeholder="请输入登录密码" 
-						style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
+						<p style="font-size: 17px;border-bottom: 1px solid #F2F2F2;padding: 1px 8px 12px 8px;">
+							<span style="margin-left: 8px;margin-right: 10px;">性别：</span>
+							<!--  0：未知/保密 1:男 2:女 -->
+							<vxe-radio name="n1" v-model="registInfo.sex" label="1" content="男"></vxe-radio>
+							<vxe-radio name="n1" v-model="registInfo.sex" label="2" content="女"></vxe-radio>
+							<vxe-radio name="n1" v-model="registInfo.sex" label="0" content="保密"></vxe-radio>
+						</p>
+
+						<input v-model="registInfo.password" type="password" placeholder="请输入登录密码"
+							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
 
 						<input v-model="registInfo.password_confirm" type="password" placeholder="请再次确认密码"
 							style="border: none;font-size: 16px;background-color: rgba(255,255,255,0);border-bottom: 1px solid #F2F2F2;" />
@@ -139,9 +126,7 @@
 					<div style="display: flex;flex-direction: row;font-size: 15px;">
 						<input id="rd_protocol" type="radio" checked="checked"
 							style="float:left;margin:0px 5px 0px 15px;">
-						<div>同意《
-							<a>超超飞书服务协议</a>》及《
-							<a>隐私权政策</a>》
+						<div>同意《 <a>超超飞书服务协议</a> 》及《 <a>隐私权政策</a> 》
 						</div>
 					</div>
 
@@ -164,8 +149,11 @@
 						@keyup.enter="handelSave($event,1)">
 				</div>
 			</div>
+			<div style="display: flex;justify-content: center;margin-top: 50px;">
+				<div @click="login" style="padding-top: 6px;cursor: pointer;width: 40%;height: 35px;border-radius: 10px;color: #fff;font-size: 16px;
+				background-image: linear-gradient(to top, #30324d 0%, #5f6298 100%);">登 录</div><br>
 
-			<button @click="login">登 录</button><br>
+			</div>
 			<div style="float: right;margin-top: 20px;cursor: pointer;" @click="openRegister">
 				<a disabled="true" style="color: white;">账号注册</a>
 			</div>
@@ -192,6 +180,7 @@
 				registInfo: {
 					account: "",
 					name: "",
+					sex: "1",
 					password: "",
 					password_confirm: ""
 				}
@@ -199,33 +188,39 @@
 			},
 			methods: {
 				login() {
+					var that = this;
 					if (this.formData.user_id == "" || this.formData.user_pwd == "") {
 						this.showTipsW("你都没有输入账号密码，还咋个登录!")
 						return;
 					}
-					var signParms = {
+					var signInputParms = {
 						user_id: this.formData.user_id,
 						user_password: Base64.encode(hex_md5(this.formData.user_pwd).toUpperCase())
 					};
-					//console.info(signParms);
-					XEAjax.post(`${curl}/login/login`, signParms).then(data => {
-						console.log(data)
+					webApi("/login/login", signInputParms, function(data) {
 						var result = data.result;
 						var msg = data.msg;
 						console.log(result)
 						if (result == "SUCCESS") {
-							this.showTipsI(msg)
+							that.showTipsI(msg)
 							setCookie("v_token", data.data);
-							setCookie("checked", this.checked);
-							if (this.checked) {
-								setCookie("user_id", this.formData.user_id);
+							setCookie("checked", that.checked);
+							if (that.checked) {
+								setCookie("user_id", that.formData.user_id);
 							}
 							//登录成功
 							window.top.location = "views/im/index.html";
 						} else {
-							this.showTipsW(msg);
+							that.showTipsW(msg);
 						}
-					});
+					}, function(xhr, type, errorThrown) {
+						that.$XModal.alert({
+							message: '登录出错!',
+							status: 'error'
+						})
+						return;
+					})
+
 				},
 				showTipsS(msg) { //弹出警告提示
 					vm.$XModal.message({
@@ -261,10 +256,8 @@
 						this.showRegisterModal = true;
 					}
 				},
-				closeRegister() {
-					this.showRegisterModal = false;
-				},
 				regist() {
+					var that = this;
 					var account = this.registInfo.account.trim();
 					var nick_name = this.registInfo.name.trim();
 					var password = this.registInfo.password.trim();
@@ -281,31 +274,45 @@
 						this.showTipsW("请输入密码");
 						return;
 					}
-					if (password.length < 6 || password_confirm.length < 6) {
-						this.showTipsW("密码长度不得小于6位");
-						return;
-					}
 					if (password != password_confirm) {
 						this.showTipsW("两次输入的密码不一致");
 						return;
 					}
+					if (password.length < 6 || password_confirm.length < 6) {
+						this.showTipsW("密码长度不得小于6位");
+						return;
+					}
 
-					var signParms = {
+					var signInputParms = {
 						user_id: account,
 						nick_name: nick_name,
+						sex: this.registInfo.sex,
 						user_password: Base64.encode(hex_md5(password).toUpperCase())
 					};
-					XEAjax.post(`${curl}/register/accountRegister`, signParms).then(data => {
+
+					webApi("/register/accountRegister", signInputParms, function(data) {
 						console.log(data)
 						var code = data.code;
 						var msg = data.msg;
 						console.log(code)
 						if (code == "200") {
-							this.showTipsS("注册成功");
-							this.showRegisterModal = false;
+							that.$XModal.alert({
+								message: '注册成功!',
+								status: 'success'
+							})
+							that.showRegisterModal = false;
 						} else {
-							this.showTipsW(msg);
+							that.$XModal.alert({
+								message: msg,
+								status: 'warning'
+							})
 						}
+					}, function(xhr, type, errorThrown) {
+						that.$XModal.alert({
+							message: '请求出错!',
+							status: 'error'
+						})
+						return;
 					});
 
 				}

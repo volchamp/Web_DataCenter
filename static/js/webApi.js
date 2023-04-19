@@ -52,13 +52,13 @@ function webApi(method,parameter, fnSuccess, fnError, async) {
 		success: function(data) {
 			//服务器返回响应，根据响应结果，分析是否登录成功；
 			var _msg=data.msg+"";
-			if (_msg.indexOf("TOKEN过期") > -1 || _msg.indexOf("登录超时") > -1) {
+			if (_msg.indexOf("TOKEN过期") > -1 || _msg.indexOf("登录超时") > -1 || _msg.indexOf("重新登录") > -1) {
 				//$.messager.alert('提示', data.msg);
 				setTimeout(function () {
 					localStorage.clear();
 					var nowurl = window.top.location+"";
-					if (nowurl.indexOf("Layout") != -1 || nowurl.indexOf("Login") != -1) {
-						top.location.href = prefix() + "Login.html";
+					if (nowurl.indexOf("views") != -1 || nowurl.indexOf("Login") != -1) {
+						top.location.href = prefix() + "login.html";
 					}
 				}, 2000);
 				return false;

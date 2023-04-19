@@ -155,12 +155,9 @@
 					}
 				},
 				created() {
-
-				},
-				mounted() {
-					// this.getUserInfo();
 					this.getNewFriendList();
 				},
+				mounted() {},
 				methods: {
 					accept: function(item, index) {
 						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝
@@ -169,7 +166,7 @@
 						var signInputParms = {
 							id: item.id, //好友申请记录ID
 							friend_id: item.userId, //好友申请人id
-							friend_status: 1, 
+							friend_status: 1,
 							friend_message: "" //留言
 						}
 						webApi("/friend/newFrendManage", signInputParms, function(data) {
@@ -198,7 +195,7 @@
 						var signInputParms = {
 							id: item.id, //好友申请记录ID
 							friend_id: item.userId, //好友申请人id
-							friend_status: 3, 
+							friend_status: 3,
 							friend_message: "" //留言
 						}
 						webApi("/friend/newFrendManage", signInputParms, function(data) {
@@ -222,37 +219,10 @@
 						})
 					},
 					ignore: function(item, index) {
-						this.$emit('getFriendApplyNum');
+						
 					},
 					applyClick: function(item, index) {
 
-					},
-					getUserInfo: function() { //获取用户信息
-						var that = this;
-						var signInputParms = {}
-						webApi("/user/getUser", signInputParms, function(data) {
-							var result = data.result;
-							var msg = data.msg;
-							if (result == "SUCCESS") {
-								var userinfo = data.userinfo;
-								that.userInfoData.userId = userinfo.userId;
-								that.userInfoData.userName = userinfo.nickName;
-								if (userinfo.headUrl) {
-									that.userInfoData.userAvatar = userinfo.headUrl;
-									that.avatarUrl = userinfo.headUrl;
-								}
-
-							} else {
-								alert(msg)
-								if (msg.indexOf("重新登录") != -1) {
-									//回到登录页
-									window.location.href = '../../login.html';
-								}
-							}
-						}, function(xhr, type, errorThrown) {
-							layer.alert('获取用户信息出错!');
-							return;
-						})
 					},
 					getNewFriendList: function() { //获取好友申请列表
 						var that = this;

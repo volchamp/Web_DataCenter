@@ -177,8 +177,8 @@
 	<body>
 		<div class="box" id="app">
 			<!-- 好友请求管理弹窗 -->
-			<el-dialog :visible.sync="newFriendsVisible" title="新朋友" width="50%" v-loading="newFriendsLoading"  @close="getFriendApplyNum"
-				element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
+			<el-dialog :visible.sync="newFriendsVisible" title="新朋友" width="50%" v-loading="newFriendsLoading"
+				@close="getFriendApplyNum" element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
 				element-loading-background="rgba(0, 0, 0, 0.7)">
 				<iframe id="newFriendsframe" src="../sysManage/newFriendsList.html"
 					style="width:100%;height: 600px;"></iframe>
@@ -282,14 +282,19 @@
 					</div>
 					<!--三图标-->
 					<div class="sidestrip_icon">
-						
+
 						<!-- <a id="si_1" @click="si1Click" title="会话列表" style="background: url('images/icon/head_2_1.png') no-repeat;"></a> -->
-						<a id="si_1" @click="si1Click" title="会话列表" :style="{background: 'url('+ si1BgIcon +') no-repeat'}"></a>
-						<a id="si_2" @click="si2Click" title="通讯录" :style="{background: 'url('+ si2BgIcon +') no-repeat'}"></a>
-						<a id="si_3" @click="si3Click" title="收藏" :style="{background: 'url('+ si3BgIcon +') no-repeat'}"></a>
-						<el-badge v-if="newFriendApplyNum!=0" :value="newFriendApplyNum" :max="99" style="float: right;margin-right: -8px;">
+						<a id="si_1" @click="si1Click" title="会话列表"
+							:style="{background: 'url('+ si1BgIcon +') no-repeat'}"></a>
+						<a id="si_2" @click="si2Click" title="通讯录"
+							:style="{background: 'url('+ si2BgIcon +') no-repeat'}"></a>
+						<a id="si_3" @click="si3Click" title="收藏"
+							:style="{background: 'url('+ si3BgIcon +') no-repeat'}"></a>
+						<el-badge v-if="newFriendApplyNum!=0" :value="newFriendApplyNum" :max="99"
+							style="float: right;margin-right: -8px;">
 						</el-badge>
-						<a id="si_4" @click="si4Click" title="新朋友" :style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a>
+						<a id="si_4" @click="si4Click" title="新朋友"
+							:style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a>
 						<!-- <a id="si_4" @click="si4Click" title="新朋友" :style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a> -->
 					</div>
 
@@ -499,14 +504,16 @@
 								<!-- 文本 -->
 								<div v-if="item.contentType==1"
 									style="display: flex;flex-direction: row;max-width: 70%;">
-									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl" :title="chatDetail.nickName">
+									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl"
+										:title="chatDetail.nickName">
 									<span
 										style="word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap:break-word;overflow:hidden;">{{item.message}}</span>
 									<div style="flex: 1;"></div>
 								</div>
 								<!-- 图片 -->
 								<div v-if="item.contentType==3" style="display: flex;flex-direction: row;">
-									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl" :title="chatDetail.nickName">
+									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl"
+										:title="chatDetail.nickName">
 									<div style="margin-left: 12px;">
 										<img style="cursor: pointer;max-width: 300px;"
 											:src="item.pictureUrl | formatImgUrl"
@@ -515,7 +522,8 @@
 								</div>
 								<!-- 文件 -->
 								<div v-if="item.contentType==5" style="display: flex;flex-direction: row;">
-									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl" :title="chatDetail.nickName">
+									<img class="userAvatar" :src="chatDetail.headUrl | formatAvartarUrl"
+										:title="chatDetail.nickName">
 									<div style="background-color: white;border: 1px solid #4A89F1;border-radius: 5px;padding: 10px;max-width: 300px;cursor: pointer;"
 										@click="fileDld(item.fileDownloadUrl)">
 										<div style="display: flex;text-align: center;">
@@ -633,10 +641,10 @@
 					showModalNiuNiuInfo: false, //是否显示牛牛截图提示窗口
 					showImgPreview: false, //是否显示图片预览窗口
 					showImgPreviewSrc: "", //预览图片内容
-					si1BgIcon:"images/icon/head_2_1.png",//左侧图标
-					si2BgIcon:"images/icon/head_3.png",
-					si3BgIcon:"images/icon/head_4.png",
-					si4BgIcon:"images/icon/head_6.png",
+					si1BgIcon: "images/icon/head_2_1.png", //左侧图标
+					si2BgIcon: "images/icon/head_3.png",
+					si3BgIcon: "images/icon/head_4.png",
+					si4BgIcon: "images/icon/head_6.png",
 					userInfoData: { //当前登录人信息
 						userId: null, //当前登录用户账号
 						userAvatar: "", //用户头像
@@ -677,8 +685,8 @@
 					submitLoading: false,
 					isShowSysManage: false, //是否显示系统管理菜单
 					fileName: "", //文件名称
-					fileDownloadUrl: "" ,//文件下载地址
-					newFriendApplyNum:0//好友申请数量
+					fileDownloadUrl: "", //文件下载地址
+					newFriendApplyNum: 0 //好友申请数量
 				},
 				filters: {
 					//局部过滤器
@@ -728,7 +736,7 @@
 
 					this.getUserInfo();
 					this.getUserRole();
-					this.getCusMsgLatestOneList();
+					this.getChatSessionList();
 					this.getCusList();
 					this.getFriendApplyNum();
 
@@ -761,7 +769,7 @@
 					},
 					searchValChat: function(newValue, oldValue) {
 						//搜索聊天列表
-						this.getCusMsgLatestOneList();
+						this.getChatSessionList();
 					},
 					searchValFriends: function(newValue, oldValue) {
 						//搜索通讯录列表
@@ -769,38 +777,38 @@
 					}
 				},
 				methods: {
-					si1Click(){
-						this.si1BgIcon="images/icon/head_2_1.png";
-						this.si2BgIcon="images/icon/head_3.png";
-						this.si3BgIcon="images/icon/head_4.png";
-						this.si4BgIcon="images/icon/head_6.png";
+					si1Click() {
+						this.si1BgIcon = "images/icon/head_2_1.png";
+						this.si2BgIcon = "images/icon/head_3.png";
+						this.si3BgIcon = "images/icon/head_4.png";
+						this.si4BgIcon = "images/icon/head_6.png";
 						this.listType = 1;
 						//刷新聊天列表
-						this.getCusMsgLatestOneList();
+						this.getChatSessionList();
 					},
-					si2Click(){
-						this.si2BgIcon="images/icon/head_3_1.png";
-						this.si1BgIcon="images/icon/head_2.png";
-						this.si3BgIcon="images/icon/head_4.png";
-						this.si4BgIcon="images/icon/head_6.png";
+					si2Click() {
+						this.si2BgIcon = "images/icon/head_3_1.png";
+						this.si1BgIcon = "images/icon/head_2.png";
+						this.si3BgIcon = "images/icon/head_4.png";
+						this.si4BgIcon = "images/icon/head_6.png";
 						this.listType = 0;
 						//刷新通讯录列表
 						this.getCusList();
-					
+
 
 					},
-					si3Click(){
-						this.si3BgIcon="images/icon/head_4_1.png";
-						this.si1BgIcon="images/icon/head_2.png";
-						this.si2BgIcon="images/icon/head_3.png";
-						this.si4BgIcon="images/icon/head_6.png";
+					si3Click() {
+						this.si3BgIcon = "images/icon/head_4_1.png";
+						this.si1BgIcon = "images/icon/head_2.png";
+						this.si2BgIcon = "images/icon/head_3.png";
+						this.si4BgIcon = "images/icon/head_6.png";
 					},
-					si4Click(){
-						this.si1BgIcon="images/icon/head_2.png";
-						this.si2BgIcon="images/icon/head_3.png";
-						this.si3BgIcon="images/icon/head_4.png";
-						this.si4BgIcon="images/icon/head_6_1.png";
-						this.newFriendsVisible=true;
+					si4Click() {
+						this.si1BgIcon = "images/icon/head_2.png";
+						this.si2BgIcon = "images/icon/head_3.png";
+						this.si3BgIcon = "images/icon/head_4.png";
+						this.si4BgIcon = "images/icon/head_6_1.png";
+						this.newFriendsVisible = true;
 					},
 					fileClick() {
 						this.contentType = 5;
@@ -850,32 +858,45 @@
 						})
 					},
 					deleteFriend(row) {
+						var that = this;
 						//好友id
 						var friendId = row.userId;
-						//登录人id
-						// var user_id = this.userInfoData.userId;
 						if (friendId == null || friendId == "") {
 							this.showTipsW("未获取到好友id，请刷新重试");
 							return;
 						}
 						var para = {
-							// user_id: user_id,
 							friend_id: friendId
 						};
-						// this.$XModal.confirm('您确定删除该好友吗？').then(type => {
-						// 	if (type == "confirm") {
-						XEAjax.post(`${curl}/user/deleteFriend`, para).then(data => {
-							vm.showTipsW(data.msg);
-							vm.getCusList();
-							// if (data.code == "200") {
-							// vm.showTipsS(data.msg);
-							// this.showModalFriendsManage=false;
-							// } else {
-							// 	vm.showTipsW(data.msg);
-							// }
+						this.$XModal.confirm('您确定删除该好友吗？').then(type => {
+							if (type == "confirm") {
+								webApi("/user/deleteFriend", para, function(data) {
+									console.log(data)
+									var code = data.code;
+									var msg = data.msg;
+									console.log(code)
+									if (code == "200") {
+										that.$XModal.alert({
+											message: msg,
+											status: 'success'
+										})
+										vm.getCusList();
+									} else {
+										that.$XModal.alert({
+											message: msg,
+											status: 'warning'
+										})
+									}
+								}, function(xhr, type, errorThrown) {
+									that.$XModal.alert({
+										message: '请求出错!',
+										status: 'error'
+									})
+									return;
+								});
+
+							}
 						})
-						// 	}
-						// })
 
 					}, //删除好友
 					blockFriend(row) {}, //拉黑
@@ -889,48 +910,72 @@
 						}
 					},
 					getCusList() { //通讯录
-						var signParms = {
-							// user_id: this.userInfoData.userId,
+						var that = this;
+						var para = {
 							keyword: this.searchValFriends
 						};
-						XEAjax.post(`${curl}/chat/getContactList`, signParms).then(data => {
-							this.friendsList = data.data;
-
-						}).catch(data => {
-							alert("哦豁，出现异常，请刷新重试一下！")
+						webApi("/chat/getContactList", para, function(data) {
+							var code = data.code;
+							var msg = data.msg;
+							var data = data.data;
+							if (code == "200") {
+								that.friendsList = data;
+							} else {
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
+							}
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
 					},
 					getUserRole() { //获取用户角色
-						var signParms = {
-							// user_id: this.userInfoData.userId
-						};
-						XEAjax.post(`${curl}/user/getRoleByUserId`, signParms).then(data => {
+						var that = this;
+						var para = {};
+						webApi("/user/getRoleByUserId", para, function(data) {
+							var code = data.code;
+							var msg = data.msg;
 							var data = data.data;
-							console.log(data);
-							if (data[0].roleId != undefined && data[0].roleId == 1000) { //如果是管理员角色
-								//显示系统管理菜单
-								this.isShowSysManage = true;
+							if (code == "200") {
+								if (data != [] && data[0].roleId == 1000) { //如果是管理员角色
+									//显示系统管理菜单
+									that.isShowSysManage = true;
+								}
+							} else {
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
 							}
 
-						}).catch(data => {
-							// alert("哦豁，获取用户角色出现异常，请刷新重试一下！")
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+
 					},
 					getUserInfo() { //获取当前登录用户信息并初始化websocket连接
-						var signParms = {
-							// user_id: this.userInfoData.userId
-						};
-						XEAjax.post(`${curl}/user/getUser`, signParms).then(data => {
+						var that = this;
+						var para = {};
+						webApi("/user/getUser", para, function(data) {
 							var result = data.result;
 							var msg = data.msg;
 							if (result == "SUCCESS") {
 								var userinfo = data.userinfo;
-								this.userInfoData.userId = userinfo.userId;
-								this.userInfoData.userName = userinfo.nickName;
+								that.userInfoData.userId = userinfo.userId;
+								that.userInfoData.userName = userinfo.nickName;
 								if (userinfo.headUrl) {
-									this.userInfoData.userAvatar = userinfo.headUrl;
+									that.userInfoData.userAvatar = userinfo.headUrl;
 								} else {
-									this.userInfoData.userAvatar = "../../static/img/logo_profile.png";
+									that.userInfoData.userAvatar = "../../static/img/logo_profile.png";
 								}
 								//判断当前浏览器是否支持WebSocket
 								if ('WebSocket' in window) {
@@ -947,7 +992,7 @@
 										status: 'warning'
 									})
 								};
-
+							
 								//连接成功建立的回调方法
 								websocket.onopen = function(event) {
 									vm.$XModal.message({
@@ -955,13 +1000,13 @@
 										status: 'info'
 									})
 								}
-
+							
 								//接收到消息的回调方法
 								websocket.onmessage = function(event) {
 									var data = event.data;
 									vm.setMessage(data);
 								}
-
+							
 								//连接关闭的回调方法
 								websocket.onclose = function() {
 									console.log("连接关闭");
@@ -970,37 +1015,40 @@
 										status: 'warning'
 									})
 								}
-
+							
 							} else {
-								vm.$XModal.message({
+								that.$XModal.alert({
 									message: msg,
 									status: 'warning'
 								})
-								if (msg.indexOf("重新登录") != -1) {
-									//回到登录页
-									window.location.href = '../../login.html';
-								}
 							}
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
 					},
-					getCusMsgLatestOneList() { //获取聊天列表（会话列表）
-						var signParms = {
+					getChatSessionList() { //获取聊天列表（会话列表）
+						var that = this;
+						var para = {
 							keyword: this.searchValChat
 						};
-						XEAjax.post(`${curl}/chat/getCusMsgLatestOneList`, signParms).then(data => {
+						webApi("/chat/getChatSessionList", para, function(data) {
 							var data = data.data;
-							this.chatList = data;
+							that.chatList = data;
 							if (data != [] && data.length > 0) {
 								//默认获取第一条相关数据
 								var obj = data[0];
-								this.chatDetail.nickName = obj.nickName
-								this.chatDetail.headUrl = obj.headUrl
-								this.chatDetail.friendId = obj.friendId;
-								// this.chatDetail.contentType=obj.contentType;//消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
-								this.chatDetail.firstUnreadCount = obj.unreadcount;
-
-								this.changeChatBackground = 0;
-
+								that.chatDetail.nickName = obj.nickName
+								that.chatDetail.headUrl = obj.headUrl
+								that.chatDetail.friendId = obj.friendId;
+								// that.chatDetail.contentType=obj.contentType;//消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
+								that.chatDetail.firstUnreadCount = obj.unreadcount;
+							
+								that.changeChatBackground = 0;
+							
 								//获取当前的聊天记录
 								setTimeout(function() {
 									vm.msgList = [];
@@ -1008,31 +1056,40 @@
 										vm.chatDetail.friendId);
 								}, 2000)
 							}
-
-						}).catch(data => {
-							this.showTipsW("哦豁，出现异常，请刷新重试一下！")
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+						
 					},
-					updateCusMsgLatestOneList() { //更新聊天列表，区别在于这里不取第一条，否则之前选中的值会被改变
-						var signParms = {
+					updateChatSessionList() { //更新聊天列表，区别在于这里不取第一条，否则之前选中的值会被改变
+						var that = this;
+						var para = {
 							keyword: this.searchValChat
 						};
-						XEAjax.post(`${curl}/chat/getCusMsgLatestOneList`, signParms).then(data => {
+						webApi("/chat/getChatSessionList", para, function(data) {
 							var data = data.data;
-							this.chatList = data;
+							that.chatList = data;
 							//获取当前选中的人的最新未读数
 							if (data != [] && data.length > 0) {
 								for (var i = 0; i < data.length; i++) {
 									var friendId = data[i].friendId;
-									if (friendId == this.chatDetail.friendId) {
-										this.chatDetail.unreadCount = data[i].unreadcount;
+									if (friendId == that.chatDetail.friendId) {
+										that.chatDetail.unreadCount = data[i].unreadcount;
 									}
 								}
 							}
-
-						}).catch(data => {
-							alert("哦豁，出现异常，请刷新重试一下！")
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+						
 					},
 					friendsClick(item, index) { //点击好友列表(通讯录)
 						this.chatDetail.nickName = item.nickName;
@@ -1077,7 +1134,7 @@
 					},
 					sendMsg() { //发送消息
 						if (websocket.readyState == 1) {
-							this.merchantmsg();
+							this.sendMsg();
 						} else {
 							this.showTipsW("连接已断开，请刷新重试！");
 						}
@@ -1099,7 +1156,7 @@
 						console.log("收到消息：" + data);
 						var obj = JSON.parse(data);
 						var sendUser = obj.sendUser;
-						var contentType=obj.contentType;
+						var contentType = obj.contentType;
 						if (obj.sendUser == this.userInfoData.userId) {
 							//如果返回的数据发送人是当前登录人，则清空输入框
 							this.msgContent = "";
@@ -1109,14 +1166,15 @@
 
 						//有新消息就刷新聊天列表
 						setTimeout(function() {
-							vm.updateCusMsgLatestOneList();
+							vm.updateChatSessionList();
 						}, 1000)
-						
-						if(contentType==6){
+
+						if (contentType == 6) {
 							this.getFriendApplyNum();
 						}
 					},
-					merchantmsg() { //调用此接口发起聊天或回复消息
+					sendMsg() { //调用此接口发起聊天或回复消息
+						var that = this;
 						var contentType = this.contentType;
 						console.log("发送类型：" + contentType);
 						var msgContent = this.msgContent;
@@ -1155,29 +1213,33 @@
 							"fileDownloadUrl": this.fileDownloadUrl
 						};
 
-						console.log(para)
-						XEAjax.post(`${curl}/chat/merchantmsg`, para).then(data => {
+						webApi("/chat/sendMsg", para, function(data) {
 							var code = data.code;
 							console.log(code)
 							if (code == 200) {
 								var data = data.data;
-								this.fileList = [];
-								this.fileName = "";
-								this.fileDownloadUrl = "";
+								that.fileList = [];
+								that.fileName = "";
+								that.fileDownloadUrl = "";
 								// console.log(data)
 								// vm.$XModal.message({
 								// 	message: "发送成功",
 								// 	status: 'info'
 								// })
 							} else {
-								this.showTipsW(data.msg);
+								that.showTipsW(data.msg);
 							}
-
-						}).catch(data => {
-							alert("发送失败了，请刷新重试一下！")
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+						
 					},
 					updateUnreadCount(unreadCount) { //更新未读消息数
+						var that = this;
 						var friendId = this.chatDetail.friendId;
 						if (friendId == "") {
 							console.log("还没有获取到好友id")
@@ -1188,37 +1250,48 @@
 							"unreadCount": unreadCount,
 							"friend_id": friendId
 						};
-						XEAjax.post(`${curl}/chat/updateUnreadCount`, para).then(data => {
+						webApi("/chat/updateUnreadCount", para, function(data) {
 							var data = data.data;
 							//更新聊天列表
-							this.updateCusMsgLatestOneList();
-						}).catch(data => {
-							this.showTipsW("哦豁，出现异常，请刷新重试一下！");
+							this.updateChatSessionList();
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+						
 					},
 					getMessageHis(pageNumber, pageSize, user_id, friend_id) { //获取聊天记录,pageNumber:页数 pageSize：每页条数
+						var that = this;
 						var para = {
-							// "user_id": user_id,
 							"friend_id": friend_id,
 							"pageNumber": pageNumber,
 							"pageSize": pageSize
 						};
-						XEAjax.post(`${curl}/chat/getMessageHis`, para).then(data => {
+						webApi("/chat/getMessageHis", para, function(data) {
 							// console.log(data)
 							var list = data.list;
 							for (var i = list.length - 1; i >= 0; i--) {
-								this.msgList.unshift(list[i]);
+								that.msgList.unshift(list[i]);
 							}
-							this.totalPage = data.totalPage;
-							if (this.pageNumber >= this.totalPage) {
-								this.pageBtnText = "没有更多数据了...";
+							that.totalPage = data.totalPage;
+							if (that.pageNumber >= that.totalPage) {
+								that.pageBtnText = "没有更多数据了...";
 							}
 							// var pageNumber=data.pageNumber;
 							// var pageSize=data.pageSize;
 							// var totalRow=data.totalRow;
-						}).catch(data => {
-							this.showTipsW("哦豁，出现异常，请刷新重试一下！")
+						
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+						
 					},
 					moreMsg() { //加载更多聊天数据
 						this.flagPosition = 1;
@@ -1236,8 +1309,8 @@
 						this.userSettingVisible = true;
 					},
 					imgPreview: function(src) {
-						if(src.indexOf("http")==-1){
-							src=imgurl+src;
+						if (src.indexOf("http") == -1) {
+							src = imgurl + src;
 						}
 						this.showImgPreviewSrc = src;
 						this.showImgPreview = true;
@@ -1283,7 +1356,7 @@
 								this.fileName = original;
 								this.fileDownloadUrl = url;
 							}
-							this.merchantmsg();
+							this.sendMsg();
 						} else {
 							this.showTipsW(res.msg);
 						}
@@ -1312,6 +1385,7 @@
 						StartCapture();
 					},
 					sendScreenshot() {
+						var that = this;
 						// console.log(extendName);
 						// console.log(savedPictureContent);
 						if (savedPictureContent == "") {
@@ -1322,31 +1396,37 @@
 							"fileBase64": savedPictureContent,
 							"fileName": "1." + extendName
 						};
-						XEAjax.post(`${curl}/attach/uploadByBase64`, para).then(data => {
-							// XEAjax.post(`${curlCos}/cos/uploadCosByStream`, para).then(data => {
+						
+						webApi("/attach/uploadByBase64", para, function(data) {
 							console.log(data)
 							var res = data;
 							if (res.code == 200) {
-								this.contentType = 3; //发送类型置为3图片
+								that.contentType = 3; //发送类型置为3图片
 								var data = res.data;
 								var original = data.original;
 								var state = data.state;
 								var title = data.title;
 								var url = data.url;
 								var viewUrl = data.viewUrl;
-
-								this.picture = {
+							
+								that.picture = {
 									"pictureUrl": viewUrl,
 								}
-								this.sendMsg();
+								that.sendMsg();
 								//关闭截图弹窗
-								this.showModalScreenshot = false;
+								that.showModalScreenshot = false;
 							} else {
-								this.showTipsW(res.msg);
+								that.showTipsW(res.msg);
 							}
-						}).catch(data => {
-							this.showTipsW("哦豁，出现异常，请刷新重试一下！")
+						
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
 						});
+						
 					},
 					inputClick() { //选中输入框
 						this.contentType = 1;
@@ -1375,37 +1455,7 @@
 
 				}
 			})
-			//左侧图标
-			// window.onload = function() {
 
-			// 	function a() {
-			// 		var si1 = document.getElementById('si_1');
-			// 		var si2 = document.getElementById('si_2');
-			// 		var si3 = document.getElementById('si_3');
-			// 		si1.onclick = function() {
-			// 			si1.style.background = "url(images/icon/head_2_1.png) no-repeat"
-			// 			si2.style.background = "";
-			// 			si3.style.background = "";
-			// 			vm.listType = 1;
-			// 			//刷新聊天列表
-			// 			vm.getCusMsgLatestOneList();
-			// 		};
-			// 		si2.onclick = function() {
-			// 			si2.style.background = "url(images/icon/head_3_1.png) no-repeat"
-			// 			si1.style.background = "";
-			// 			si3.style.background = "";
-			// 			vm.listType = 0;
-			// 			//刷新通讯录列表
-			// 			vm.getCusList();
-			// 		};
-			// 		si3.onclick = function() {
-			// 			si3.style.background = "url(images/icon/head_4_1.png) no-repeat"
-			// 			si1.style.background = "";
-			// 			si2.style.background = "";
-			// 		};
-			// 	};
-			// 	a();
-			// };
 
 			//监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
 			window.onbeforeunload = function() {
