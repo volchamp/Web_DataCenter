@@ -177,7 +177,7 @@
 	<body>
 		<div class="box" id="app">
 			<!-- 好友请求管理弹窗 -->
-			<el-dialog :visible.sync="newFriendsVisible" title="新朋友" width="50%" v-loading="newFriendsLoading"
+			<el-dialog v-if="newFriendsVisible" :visible.sync="newFriendsVisible" title="新朋友" width="50%" v-loading="newFriendsLoading"
 				@close="getFriendApplyNum" element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
 				element-loading-background="rgba(0, 0, 0, 0.7)">
 				<iframe id="newFriendsframe" src="../sysManage/newFriendsList.html"
