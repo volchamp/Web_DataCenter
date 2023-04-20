@@ -16,7 +16,6 @@
 		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
-		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
 		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
 		<script type="text/javascript" src="../../static/js/webApi.js"></script>
@@ -245,14 +244,16 @@
 							}
 
 						} else {
-							alert(msg)
-							if (msg.indexOf("重新登录") != -1) {
-								//回到登录页
-								window.location.href = '../../login.html';
-							}
+							that.$XModal.alert({
+								message: msg,
+								status: 'warning'
+							})
 						}
 					}, function(xhr, type, errorThrown) {
-						layer.alert('获取用户信息出错!');
+						that.$XModal.alert({
+							message: '请求出错啦，请联系大佬超!',
+							status: 'error'
+						})
 						return;
 					})
 				},
@@ -287,13 +288,16 @@
 							that.uploadAvatarVisible = false;
 
 						} else {
-							alert(msg)
-							if (msg.indexOf("重新登录") != -1) {
-								//回到登录页
-								window.location.href = '../../login.html';
-							}
+							that.$XModal.alert({
+								message: msg,
+								status: 'warning'
+							})
 						}
 					}, function(xhr, type, errorThrown) {
+						that.$XModal.alert({
+							message: '请求出错啦，请联系大佬超!',
+							status: 'error'
+						})
 						return;
 					})
 				},

@@ -15,7 +15,6 @@
 		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
-		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
 		<script type="text/javascript" src="../../lib/xe-ajax/xe-ajax.js"></script>
 		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
@@ -45,7 +44,7 @@
 				<!-- 添加好友模态框 -->
 				<vxe-modal ref="xModal" v-model="showApplyModal" title="添加好友" width="600"
 					:loading="false" resize destroy-on-close>
-					<div style="text-align: center;">
+					<div style="text-align: center;font-size: 16px;">
 
 						<vxe-textarea v-model="message" placeholder="输入留言..." maxlength="100"
 							show-word-count></vxe-textarea>
@@ -221,13 +220,13 @@
 							vm.totalPage = totalPage;
 						} else {
 							vm.$XModal.message({
-								message: "哦豁，" + msg + "，请重试哦！",
+								message: msg,
 								status: 'warning'
 							});
 						}
 					}, function(xhr, type, errorThrown) {
 						that.$XModal.alert({
-							message: '获取用户信息出错!',
+							message: '请求出错啦，请联系大佬超!',
 							status: 'error'
 						})
 						return;
@@ -281,10 +280,6 @@
 								message: msg,
 								status: 'warning'
 							})
-							if (msg.indexOf("重新登录") != -1) {
-								//回到登录页
-								window.location.href = '../../login.html';
-							}
 						}
 					}, function(xhr, type, errorThrown) {
 						that.$XModal.alert({

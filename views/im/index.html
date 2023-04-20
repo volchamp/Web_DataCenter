@@ -686,7 +686,8 @@
 					isShowSysManage: false, //是否显示系统管理菜单
 					fileName: "", //文件名称
 					fileDownloadUrl: "", //文件下载地址
-					newFriendApplyNum: 0 //好友申请数量
+					newFriendApplyNum: 0 ,//好友申请数量
+					unReadAudio: 'audio/unReadAudio.mp3'//提示音路径
 				},
 				filters: {
 					//局部过滤器
@@ -850,10 +851,6 @@
 									message: msg,
 									status: 'warning'
 								})
-								if (msg.indexOf("重新登录") != -1) {
-									//回到登录页
-									window.location.href = '../../login.html';
-								}
 							}
 						}, function(xhr, type, errorThrown) {
 							that.$XModal.alert({
@@ -968,6 +965,19 @@
 						});
 
 					},
+					initAudio(){//播放提示音
+						var audio = document.createElement('audio');
+						audio.style = "outline:none;"
+						audio.setAttribute('id', 'audio');
+						audio.setAttribute('controls', 'controls');
+						audio.setAttribute('autoplay', 'true');
+						audio.setAttribute('src', this.unReadAudio);
+						document.body.appendChild(audio);
+						setTimeout(() => {
+							var audioRemove = document.getElementById('audio');
+							audioRemove.parentNode.removeChild(audioRemove);
+						}, 3000);
+					},
 					getUserInfo() { //获取当前登录用户信息并初始化websocket连接
 						var that = this;
 						var para = {};
@@ -1011,6 +1021,9 @@
 								websocket.onmessage = function(event) {
 									var data = event.data;
 									vm.setMessage(data);
+									
+									//播放提示音
+									that.initAudio();
 								}
 							
 								//连接关闭的回调方法
@@ -1176,6 +1189,10 @@
 						}, 1000)
 
 						if (contentType == 6) {
+							this.$XModal.message({
+								message: "你有新的好友请求！",
+								status: 'success'
+							})
 							this.getFriendApplyNum();
 						}
 					},

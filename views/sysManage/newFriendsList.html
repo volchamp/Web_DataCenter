@@ -15,7 +15,6 @@
 		<script type="text/javascript" src="../../lib/element-ui/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table/index.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-element/index.js"></script>
-		<script type="text/javascript" src="../../lib/xlsx/xlsx.full.min.js"></script>
 		<script type="text/javascript" src="../../lib/vxe-table-plugin-export-xlsx/index.min.js"></script>
 		<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
 		<script type="text/javascript" src="../../static/js/webApi.js"></script>
@@ -68,10 +67,40 @@
 			#reject:hover {
 				border: 1px solid #4169EE;
 			}
+
+			#ignore {
+				border: 1px solid lightgray;
+				background: white;
+				padding: 0 8px;
+				outline: 0;
+				height: 26px;
+				width: 80px;
+				margin-right: 10px;
+				cursor: pointer;
+			}
+
+			#ignore:hover {
+				border: 1px solid #4169EE;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="app">
+			<template>
+				<!-- 好友请求处理模态框 -->
+				<vxe-modal ref="xModal" v-model="showApplyModal" title="同意好友" width="600" :loading="false" resize
+					destroy-on-close>
+					<div style="text-align: center;font-size: 16px;">
+
+						<vxe-textarea v-model="message" placeholder="输入留言..." maxlength="100"
+							show-word-count></vxe-textarea>
+
+						<vxe-button status="primary" content="同意" @click="accept"
+							style="margin-top: 30px;"></vxe-button>
+					</div>
+
+				</vxe-modal>
+			</template>
 			<!-- 			<div style="display: flex;border-bottom: 1px solid lightgray;align-items: center;padding: 5px;">
 				<img class="user_head" src="http://124.222.4.40:8091/files//default_avatar.jpeg">
 				<div style="display: flex;flex-direction: column;margin-left: 10px;flex: 1;">
@@ -89,18 +118,26 @@
 				<img class="user_head" :src="item.headUrl | formatAvartarUrl">
 				<div style="display: flex;flex-direction: column;margin-left: 10px;flex: 1;">
 					<p class="user_name">{{item.nickName}}</p>
-					<p class="user_message">{{item.friendMessage}}</p>
+					<div style="display: flex;color: #999;font-size: 12px;">
+						<p v-if="item.userId==userInfoData.userId">我：</p>
+						<p>{{item.friendMessage}}</p>
+					</div>
 				</div>
 				<div style="">
 					<p class="user_message">{{item.createTime | formatDate}}</p>
 				</div>
 				<div style="margin-left: 20px;">
-					<button v-if="item.friendStatus==0" @click="accept(item, index)" id="accept">同意</button>
+					<button v-if="item.friendStatus==0" @click="openWind(item, index)" id="accept">同意</button>
 					<button v-if="item.friendStatus==0" @click="reject(item, index)" id="reject">拒绝</button>
 					<button v-if="item.friendStatus==0" @click="ignore(item, index)" id="ignore">忽略</button>
-					<div v-if="item.friendStatus==1">已添加</div>
+					<div v-if="item.friendStatus==1" style="display: flex;">
+						<!-- 如果是我加别人，显示图标 -->
+						<img v-if="item.userId==userInfoData.userId" style="width: 20px;height: 20px;" src="../../static/img/箭头_右上_o.png"/>
+						<p style="font-size: 16px;">已添加</p>
+					</div>
 					<div v-if="item.friendStatus==3">已拒绝</div>
 					<div v-if="item.friendStatus==2">已拉入黑名单</div>
+					<div v-if="item.friendStatus==4">已忽略</div>
 				</div>
 			</div>
 
@@ -110,6 +147,9 @@
 			var vm = new Vue({
 				el: "#app",
 				data: {
+					id: "", //申请记录ID
+					friend_id: "", //申请人id
+					message: "", //留言
 					userInfoData: { //当前登录人信息
 						userId: "", //当前登录用户账号
 						userAvatar: "", //用户头像
@@ -117,6 +157,7 @@
 						roleCodes: '', //角色id
 						userBgCover: '../im/images/bg1.jpg' //用户背景封面
 					},
+					showApplyModal: false,
 					applyList: [], //好友申请列表
 				},
 				filters: {
@@ -156,42 +197,84 @@
 				},
 				created() {
 					this.getNewFriendList();
+					this.getUserInfo();
 				},
 				mounted() {
-					
+
 				},
 				methods: {
+					getUserInfo: function() { //获取用户信息
+						var that = this;
+						var signInputParms = {}
+						webApi("/user/getUser", signInputParms, function(data) {
+							var result = data.result;
+							var msg = data.msg;
+							if (result == "SUCCESS") {
+								var userinfo = data.userinfo;
+								that.userInfoData.userId = userinfo.userId;
+								that.userInfoData.userName = userinfo.nickName;
+								if (userinfo.headUrl) {
+									that.userInfoData.userAvatar = userinfo.headUrl;
+									that.avatarUrl = userinfo.headUrl;
+								}
+					
+							} else {
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
+							}
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
+						})
+					},
+					openWind: function(item, index) {
+						this.showApplyModal = true;
+						this.id = item.id; //好友申请记录ID
+						this.friend_id = item.userId; //好友申请人id
+					},
 					accept: function(item, index) {
+
 						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝
 						//同意 1
 						var that = this;
 						var signInputParms = {
-							id: item.id, //好友申请记录ID
-							friend_id: item.userId, //好友申请人id
+							id: this.id, //好友申请记录ID
+							friend_id: this.friend_id, //好友申请人id
 							friend_status: 1,
-							friend_message: "" //留言
+							friend_message: this.message //留言
 						}
 						webApi("/friend/newFrendManage", signInputParms, function(data) {
 							var code = data.code;
 							var msg = data.msg;
 							var data = data.data;
 							if (code == "200") {
-								alert(msg)
+								that.$XModal.alert({
+									message: msg,
+									status: 'success'
+								})
 								that.getNewFriendList();
+								that.showApplyModal = false;
 							} else {
-								alert(msg);
-								if (msg.indexOf("重新登录") != -1) {
-									//回到登录页
-									window.location.href = '../../login.html';
-								}
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
 							}
 						}, function(xhr, type, errorThrown) {
-							layer.alert('操作出错!');
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
 							return;
 						})
 					},
 					reject: function(item, index) {
-						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝
+						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝,4忽略
 						//拒绝 3
 						var that = this;
 						var signInputParms = {
@@ -205,23 +288,58 @@
 							var msg = data.msg;
 							var data = data.data;
 							if (code == "200") {
-								alert(msg);
+								that.$XModal.alert({
+									message: msg,
+									status: 'success'
+								})
 								that.getNewFriendList();
-								that.$emit('close');
 							} else {
-								alert(msg)
-								if (msg.indexOf("重新登录") != -1) {
-									//回到登录页
-									window.location.href = '../../login.html';
-								}
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
 							}
 						}, function(xhr, type, errorThrown) {
-							layer.alert('操作出错!');
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
 							return;
 						})
 					},
 					ignore: function(item, index) {
-						
+						//关系状态，0请求加对方为好友，1正常（同意），2黑名单，3拒绝,4忽略
+						//4忽略
+						var that = this;
+						var signInputParms = {
+							id: item.id, //好友申请记录ID
+							friend_id: item.userId, //好友申请人id
+							friend_status: 4,
+							friend_message: "" //留言
+						}
+						webApi("/friend/newFrendManage", signInputParms, function(data) {
+							var code = data.code;
+							var msg = data.msg;
+							var data = data.data;
+							if (code == "200") {
+								that.$XModal.alert({
+									message: msg,
+									status: 'success'
+								})
+								that.getNewFriendList();
+							} else {
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
+							}
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
+						})
 					},
 					applyClick: function(item, index) {
 
@@ -236,14 +354,16 @@
 							if (code == "200") {
 								that.applyList = data;
 							} else {
-								alert(msg)
-								if (msg.indexOf("重新登录") != -1) {
-									//回到登录页
-									window.location.href = '../../login.html';
-								}
+								that.$XModal.alert({
+									message: msg,
+									status: 'warning'
+								})
 							}
 						}, function(xhr, type, errorThrown) {
-							layer.alert('获取信息出错!');
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
 							return;
 						})
 					}
