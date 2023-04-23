@@ -177,11 +177,11 @@
 
 				<!-- 右边 -->
 				<div style="flex: 1;padding: 20px;">
-					<div><span class="info_text">ID:</span></div>
-					<div><span class="info_text">昵称:</span></div>
-					<div><span class="info_text">性别:</span></div>
-					<div><span class="info_text">年龄:</span></div>
-					<div><span class="info_text">地区:</span></div>
+					<div><span class="info_text">ID:{{userInfoData.userId}}</span></div>
+					<div><span class="info_text">昵称:{{userInfoData.nickName}}</span></div>
+					<div><span class="info_text">性别:{{userInfoData.sex}}</span></div>
+					<div><span class="info_text">年龄:{{userInfoData.age}}</span></div>
+					<!-- <div><span class="info_text">地区:{{userInfoData.userId}}</span></div> -->
 				</div>
 			</div>
 		</div>
@@ -195,6 +195,9 @@
 				userInfoData: { //当前登录人信息
 					userId: "", //当前登录用户账号
 					userAvatar: "", //用户头像
+					nickName:"",//昵称
+					sex:"",//性别
+					age:0,//年龄
 					userName: "", //用户名
 					roleCodes: '', //角色id
 					userBgCover: '../im/images/bg1.jpg' //用户背景封面
@@ -237,7 +240,9 @@
 						if (result == "SUCCESS") {
 							var userinfo = data.userinfo;
 							that.userInfoData.userId = userinfo.userId;
-							that.userInfoData.userName = userinfo.nickName;
+							that.userInfoData.nickName = userinfo.nickName;
+							that.userInfoData.sex = userinfo.sex;
+							that.userInfoData.age = userinfo.age;
 							if (userinfo.headUrl) {
 								that.userInfoData.userAvatar = userinfo.headUrl;
 								that.avatarUrl = userinfo.headUrl;

@@ -177,9 +177,9 @@
 	<body>
 		<div class="box" id="app">
 			<!-- 好友请求管理弹窗 -->
-			<el-dialog v-if="newFriendsVisible" :visible.sync="newFriendsVisible" title="新朋友" width="50%" v-loading="newFriendsLoading"
-				@close="getFriendApplyNum" element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
-				element-loading-background="rgba(0, 0, 0, 0.7)">
+			<el-dialog v-if="newFriendsVisible" :visible.sync="newFriendsVisible" title="新朋友" width="50%"
+				v-loading="newFriendsLoading" @close="getFriendApplyNum" element-loading-text="死命加载中"
+				element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.7)">
 				<iframe id="newFriendsframe" src="../sysManage/newFriendsList.html"
 					style="width:100%;height: 600px;"></iframe>
 			</el-dialog>
@@ -275,7 +275,7 @@
 
 				<div class="sidestrip">
 					<div class="am-dropdown" data-am-dropdown>
-						<!--头像插件-->
+						<!--头像-->
 						<div class="own_head am-dropdown-toggle"
 							:style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 							@click="userSetting"></div>
@@ -284,8 +284,9 @@
 					<div class="sidestrip_icon">
 
 						<!-- <a id="si_1" @click="si1Click" title="会话列表" style="background: url('images/icon/head_2_1.png') no-repeat;"></a> -->
-						
-						<!-- <el-badge  :value="userInfoData.unreadSum" :max="99" style=""> -->
+
+						<el-badge v-if="userInfoData.unreadSum!=0" :value="userInfoData.unreadSum" :max="99"
+							style="float: right;margin-right: -8px;"></el-badge>
 						<a id="si_1" @click="si1Click" title="会话列表"
 							:style="{background: 'url('+ si1BgIcon +') no-repeat'}"></a>
 						<a id="si_2" @click="si2Click" title="通讯录"
@@ -650,8 +651,8 @@
 					userInfoData: { //当前登录人信息
 						userId: null, //当前登录用户账号
 						userAvatar: "", //用户头像
-						userName: "" ,//用户名
-						unreadSum: 0//会话列表未读总数
+						userName: "", //用户名
+						unreadSum: 0 //会话列表未读总数
 					},
 					friendsList: [], //通讯录列表
 					chatList: [], //会话列表
@@ -689,8 +690,8 @@
 					isShowSysManage: false, //是否显示系统管理菜单
 					fileName: "", //文件名称
 					fileDownloadUrl: "", //文件下载地址
-					newFriendApplyNum: 0 ,//好友申请数量
-					unReadAudio: 'audio/unReadAudio.mp3'//提示音路径
+					newFriendApplyNum: 0, //好友申请数量
+					unReadAudio: 'audio/unReadAudio.mp3' //提示音路径
 				},
 				filters: {
 					//局部过滤器
@@ -728,6 +729,8 @@
 						//拼接一下图片服务器地址
 						if (url.indexOf("http://") == -1) {
 							return imgurl + url;
+						}else{
+							return url;
 						}
 					}
 				},
@@ -736,6 +739,9 @@
 						return this.msg + " world!"
 					}
 				},
+				mounted(){
+					
+				},
 				created() { //页面加载起始
 
 					this.getUserInfo();
@@ -743,7 +749,7 @@
 					this.getChatSessionList();
 					this.getCusList();
 					this.getFriendApplyNum();
-					this.getChatSessionUnreadSum();
+					
 
 					//清空聊天列表第一个默认选中的人未读消息数
 					setTimeout(function() {
@@ -751,6 +757,7 @@
 							vm.updateUnreadCount(0);
 						}
 					}, 1500)
+					
 
 					//初始化截图相关
 					Init();
@@ -949,7 +956,7 @@
 							var msg = data.msg;
 							var data = data.data;
 							if (code == "200") {
-								if (data != [] && data[0].roleId == 1000) { //如果是管理员角色
+								if (data[0] != undefined && data[0].roleId == 1000) { //如果是管理员角色
 									//显示系统管理菜单
 									that.isShowSysManage = true;
 								}
@@ -969,7 +976,7 @@
 						});
 
 					},
-					initAudio(){//播放提示音
+					initAudio() { //播放提示音
 						var audio = document.createElement('audio');
 						audio.style = "outline:none;"
 						audio.setAttribute('id', 'audio');
@@ -1012,7 +1019,7 @@
 										status: 'warning'
 									})
 								};
-							
+
 								//连接成功建立的回调方法
 								websocket.onopen = function(event) {
 									vm.$XModal.message({
@@ -1020,16 +1027,13 @@
 										status: 'info'
 									})
 								}
-							
+
 								//接收到消息的回调方法
 								websocket.onmessage = function(event) {
 									var data = event.data;
 									vm.setMessage(data);
-									
-									//播放提示音
-									that.initAudio();
 								}
-							
+
 								//连接关闭的回调方法
 								websocket.onclose = function() {
 									console.log("连接关闭");
@@ -1038,7 +1042,7 @@
 										status: 'warning'
 									})
 								}
-							
+
 							} else {
 								that.$XModal.alert({
 									message: msg,
@@ -1069,9 +1073,9 @@
 								that.chatDetail.friendId = obj.friendId;
 								// that.chatDetail.contentType=obj.contentType;//消息类型，每次消息只能传 1 种类型（发送对应消息类型内容不能为空）1 文本2 房屋卡片3 图片4 位置
 								that.chatDetail.firstUnreadCount = obj.unreadcount;
-							
+
 								that.changeChatBackground = 0;
-							
+
 								//获取当前的聊天记录
 								setTimeout(function() {
 									vm.msgList = [];
@@ -1086,7 +1090,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					getChatSessionUnreadSum() { //获取会话列表未读总数
 						var that = this;
@@ -1099,7 +1103,9 @@
 							if (data != [] && data.length > 0) {
 								//默认获取第一条相关数据
 								var obj = data[0];
-								that.userInfoData.unreadSum = obj.unreadsum;
+								setTimeout(function() {
+									vm.userInfoData.unreadSum = obj.unreadsum;
+								}, 1000)
 							}
 						}, function(xhr, type, errorThrown) {
 							that.$XModal.alert({
@@ -1108,7 +1114,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					updateChatSessionList() { //更新聊天列表，区别在于这里不取第一条，否则之前选中的值会被改变
 						var that = this;
@@ -1134,7 +1140,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					friendsClick(item, index) { //点击好友列表(通讯录)
 						this.chatDetail.nickName = item.nickName;
@@ -1206,12 +1212,18 @@
 							//如果返回的数据发送人是当前登录人，则清空输入框
 							this.msgContent = "";
 						}
+						if(obj.receiver==this.userInfoData.userId){
+							//如果接收人是当前登录人，播放提示音
+							//播放提示音
+							this.initAudio();
+						}
 						this.msgList = this.msgList.concat(obj);
 						// console.log("总数据：" + JSON.stringify(this.msgList));
 
-						//有新消息就刷新聊天列表
+						//有新消息就刷新聊天列表，更新总未读数
 						setTimeout(function() {
 							vm.updateChatSessionList();
+							vm.getChatSessionUnreadSum();
 						}, 1000)
 
 						if (contentType == 6) {
@@ -1285,7 +1297,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					updateUnreadCount(unreadCount) { //更新未读消息数
 						var that = this;
@@ -1302,7 +1314,8 @@
 						webApi("/chat/updateUnreadCount", para, function(data) {
 							var data = data.data;
 							//更新聊天列表
-							this.updateChatSessionList();
+							that.updateChatSessionList();
+							that.getChatSessionUnreadSum();
 						}, function(xhr, type, errorThrown) {
 							that.$XModal.alert({
 								message: '请求出错啦，请联系大佬超!',
@@ -1310,7 +1323,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					getMessageHis(pageNumber, pageSize, user_id, friend_id) { //获取聊天记录,pageNumber:页数 pageSize：每页条数
 						var that = this;
@@ -1332,7 +1345,7 @@
 							// var pageNumber=data.pageNumber;
 							// var pageSize=data.pageSize;
 							// var totalRow=data.totalRow;
-						
+
 						}, function(xhr, type, errorThrown) {
 							that.$XModal.alert({
 								message: '请求出错啦，请联系大佬超!',
@@ -1340,7 +1353,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					moreMsg() { //加载更多聊天数据
 						this.flagPosition = 1;
@@ -1445,7 +1458,7 @@
 							"fileBase64": savedPictureContent,
 							"fileName": "1." + extendName
 						};
-						
+
 						webApi("/attach/uploadByBase64", para, function(data) {
 							console.log(data)
 							var res = data;
@@ -1457,7 +1470,7 @@
 								var title = data.title;
 								var url = data.url;
 								var viewUrl = data.viewUrl;
-							
+
 								that.picture = {
 									"pictureUrl": viewUrl,
 								}
@@ -1467,7 +1480,7 @@
 							} else {
 								that.showTipsW(res.msg);
 							}
-						
+
 						}, function(xhr, type, errorThrown) {
 							that.$XModal.alert({
 								message: '请求出错啦，请联系大佬超!',
@@ -1475,7 +1488,7 @@
 							})
 							return;
 						});
-						
+
 					},
 					inputClick() { //选中输入框
 						this.contentType = 1;
