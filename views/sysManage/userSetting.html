@@ -38,8 +38,9 @@
 		}
 
 		.info_text {
-			font-size: 14px;
+			font-size: 15px;
 			color: grey;
+			margin: 10px;
 		}
 
 		.avatar_window {
@@ -169,18 +170,25 @@
 						<div class="info_head" :style="{backgroundImage: 'url('+ imgurl+userInfoData.userAvatar +')'}"
 							@click="changeAvatar(userInfoData.userAvatar)" title="点击更换头像"></div>
 						<div style="margin-left: 10px;">
-							<div><span style="font-size: 22px;color: white;">{{userInfoData.userName}}</span></div>
-							<div><span style="font-size: 14px;color: white;">编辑个性签名</span></div>
+							<div><span style="font-size: 22px;color: white;">{{userInfoData.nickName}}</span></div>
+							<div>
+								<input v-show="isShowSignInput" v-model="personalSign"
+									@blur="animateWidth('sign','blur')" v-debounce-input:3000ms="getInputData" />
+								<span v-show="isShowSignSpan"
+									style="font-size: 14px;color: white;">{{personalSign | formatPersonalSign}}</span>
+								<img @click="editSign" src="../../static/img/编辑.png"
+									style="margin-bottom: -3px;cursor: pointer;" />
+							</div>
 						</div>
 					</div>
 				</div>
 
 				<!-- 右边 -->
 				<div style="flex: 1;padding: 20px;">
-					<div><span class="info_text">ID:{{userInfoData.userId}}</span></div>
-					<div><span class="info_text">昵称:{{userInfoData.nickName}}</span></div>
-					<div><span class="info_text">性别:{{userInfoData.sex}}</span></div>
-					<div><span class="info_text">年龄:{{userInfoData.age}}</span></div>
+					<div><span class="info_text">ID：{{userInfoData.userId}}</span></div>
+					<div><span class="info_text">昵称：{{userInfoData.nickName}}</span></div>
+					<div><span class="info_text">性别：{{userInfoData.sex | formatSex}}</span></div>
+					<div><span class="info_text">年龄：{{userInfoData.age}}</span></div>
 					<!-- <div><span class="info_text">地区:{{userInfoData.userId}}</span></div> -->
 				</div>
 			</div>
@@ -190,18 +198,21 @@
 		var vm = new Vue({
 			el: "#app",
 			data: {
+				isShowSignInput: false,
+				isShowSignSpan: true,
 				uploadAvatarVisible: false, //是否显示个人头像设置页面
 				uploadAvatarLoading: false,
 				userInfoData: { //当前登录人信息
 					userId: "", //当前登录用户账号
 					userAvatar: "", //用户头像
-					nickName:"",//昵称
-					sex:"",//性别
-					age:0,//年龄
+					nickName: "", //昵称
+					sex: "", //性别
+					age: 0, //年龄
 					userName: "", //用户名
 					roleCodes: '', //角色id
 					userBgCover: '../im/images/bg1.jpg' //用户背景封面
 				},
+				personalSign: "",
 				fileUploadUrl: curl + '/attach/uploadAtt', //文件上传接口
 				fileList: [], //上传之后返回的文件路径列表
 				avatarUrl: "" //上传成功后的头像url相对路径
@@ -219,6 +230,30 @@
 					if (url.indexOf("http://") == -1) {
 						return imgurl + url;
 					}
+				},
+				formatSex: function(sex) {
+					//用户性别： 0：未知/保密 1:男 2:女
+					if (sex == 1) {
+						return "男";
+					} else if (sex == 0) {
+						return "未知/保密";
+					} else if (sex == 2) {
+						return "女";
+					} else {
+						return "未知";
+					}
+				},
+				formatPersonalSign: function(val) {
+					if (val == undefined || val == null || val == "") {
+						return "编辑个性签名";
+					} else {
+						return val;
+					}
+				}
+			},
+			watch: {
+				personalSign: function(newValue, oldValue) {
+					
 				}
 			},
 			created() {
@@ -227,7 +262,66 @@
 			mounted() {
 				this.getUserInfo();
 			},
+			directives: {
+				'debounce-input': { //自定义指令 v-debounce-input
+					inserted(el, binding) {
+						let timeout
+						el.addEventListener('input', () => {
+							clearTimeout(timeout)
+							timeout = setTimeout(() => {
+								binding.value()
+							}, parseInt(binding.arg) || 300)
+						})
+					}
+				}
+			},
 			methods: {
+				getInputData: function() {
+					// console.log(vm.personalSign);
+				},
+				animateWidth(name, type) {
+					if (type == "blur") {
+						if (name == "sign") {
+							this.isShowSignInput = false;
+							this.isShowSignSpan = true;
+							//个人签名input框失去焦点时，提交
+							if (this.personalSign != "") {
+								//修改用户头像路径
+								var that = this;
+								var signInputParms = {
+									personalSign: this.personalSign
+								}
+								webApi("/user/updatePersonalSign", signInputParms, function(data) {
+									var code = data.code;
+									var msg = data.msg;
+									if (code == 200) {
+										vm.getUserInfo();
+										that.$message({
+											message: '个性签名更改成功！',
+											type: 'success'
+										});
+
+									} else {
+										that.$XModal.alert({
+											message: msg,
+											status: 'warning'
+										})
+									}
+								}, function(xhr, type, errorThrown) {
+									that.$XModal.alert({
+										message: '请求出错啦，请联系大佬超!',
+										status: 'error'
+									})
+									return;
+								})
+							}
+						}
+					}
+				},
+				editSign: function() {
+					this.isShowSignInput = true;
+					this.isShowSignSpan = false;
+				},
 				closeUpload: function() {
 					this.uploadAvatarVisible = false;
 				},
@@ -243,6 +337,7 @@
 							that.userInfoData.nickName = userinfo.nickName;
 							that.userInfoData.sex = userinfo.sex;
 							that.userInfoData.age = userinfo.age;
+							that.personalSign = userinfo.personalSign;
 							if (userinfo.headUrl) {
 								that.userInfoData.userAvatar = userinfo.headUrl;
 								that.avatarUrl = userinfo.headUrl;

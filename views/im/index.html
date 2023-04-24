@@ -192,7 +192,7 @@
 			</el-dialog>
 
 			<!-- 个人资料页弹窗 -->
-			<el-dialog :visible.sync="userSettingVisible" title="个人中心" width="900px" v-loading="userSettingLoading"
+			<el-dialog v-if="userSettingVisible" :visible.sync="userSettingVisible" title="个人中心" width="900px" v-loading="userSettingLoading"
 				element-loading-text="死命加载中" element-loading-spinner="el-icon-loading"
 				element-loading-background="rgba(0, 0, 0, 0.7)">
 				<iframe id="userSettingframe" src="../sysManage/userSetting.html"
@@ -367,7 +367,9 @@
 				<div class="middle">
 					<div class="wx_search">
 						<input type="text" v-model="searchValFriends" placeholder="搜索" />
-						<button title="添加好友" @click="openFriends">+</button>
+						<button title="添加好友" @click="openFriends">
+							<img src="../../static/img/添加好友.png"/>
+						</button>
 					</div>
 					<div class="office_text">
 						<ul class="friends_list">
@@ -427,7 +429,7 @@
 
 
 				<!--聊天窗口 start-->
-				<div class="talk_window">
+				<div v-show="isShow_talk_window" class="talk_window">
 					<div class="windows_top">
 						<div class="windows_top_box">
 							<span>{{chatDetail.nickName}}</span>
@@ -588,7 +590,7 @@
 				<!--聊天窗口 end-->
 
 				<!--最右侧好友资料卡 start-->
-				<div class="window_friend_info">
+				<div v-show="isShow_window_friend_info" class="window_friend_info">
 					<div class="friend_info">
 						<div class="info_icon">
 							<a><img src="images/icon/icon10.png" /></a>
@@ -637,7 +639,7 @@
 				data: {
 					addFriendsVisible: false, //是否显示添加好友页面
 					addFriendsLoading: false,
-					userSettingVisible: false, //是否显示个人资料设置页面
+					userSettingVisible: true, //是否显示个人资料设置页面
 					userSettingLoading: false,
 					newFriendsVisible: false, //是否显示好友请求处理页面
 					newFriendsLoading: false,
@@ -691,7 +693,10 @@
 					fileName: "", //文件名称
 					fileDownloadUrl: "", //文件下载地址
 					newFriendApplyNum: 0, //好友申请数量
-					unReadAudio: 'audio/unReadAudio.mp3' //提示音路径
+					unReadAudio: 'audio/unReadAudio.mp3' ,//提示音路径
+					isShow_talk_window:true,//是否显示聊天窗口
+					isShow_window_friend_info:true//是否显示最右侧好友信息窗口
+					
 				},
 				filters: {
 					//局部过滤器
@@ -726,6 +731,9 @@
 						return imgurl + url;
 					},
 					formatAvartarUrl: function(url) {
+						if(url==undefined){
+							return "";
+						}
 						//拼接一下图片服务器地址
 						if (url.indexOf("http://") == -1) {
 							return imgurl + url;
@@ -795,6 +803,10 @@
 						this.si3BgIcon = "images/icon/head_4.png";
 						this.si4BgIcon = "images/icon/head_6.png";
 						this.listType = 1;
+						
+						//显示聊天窗口
+						this.isShow_talk_window=true;
+						this.isShow_window_friend_info=true;
 						//刷新聊天列表
 						this.getChatSessionList();
 					},
@@ -821,6 +833,10 @@
 						this.si3BgIcon = "images/icon/head_4.png";
 						this.si4BgIcon = "images/icon/head_6_1.png";
 						this.newFriendsVisible = true;
+						
+						//隐藏聊天窗口
+						this.isShow_talk_window=false;
+						this.isShow_window_friend_info=false;
 					},
 					fileClick() {
 						this.contentType = 5;
@@ -1146,6 +1162,10 @@
 						this.chatDetail.nickName = item.nickName;
 						this.chatDetail.headUrl = item.headUrl;
 						this.chatDetail.friendId = item.userId;
+						
+						//显示聊天窗口
+						this.isShow_talk_window=true;
+						this.isShow_window_friend_info=true;
 
 						//获取当前这个人的聊天记录
 						this.msgList = [];
