@@ -285,19 +285,23 @@
 
 						<!-- <a id="si_1" @click="si1Click" title="会话列表" style="background: url('images/icon/head_2_1.png') no-repeat;"></a> -->
 
-						<el-badge v-if="userInfoData.unreadSum!=0" :value="userInfoData.unreadSum" :max="99"
-							style="float: right;margin-right: -8px;"></el-badge>
+						
 						<a id="si_1" @click="si1Click" title="会话列表"
-							:style="{background: 'url('+ si1BgIcon +') no-repeat'}"></a>
+							:style="{background: 'url('+ si1BgIcon +') no-repeat'}">
+							<el-badge v-show="userInfoData.unreadSum!=0" :value="userInfoData.unreadSum" :max="99"
+								style="float: right;margin-right: -8px;"></el-badge>
+						</a>
 						<a id="si_2" @click="si2Click" title="通讯录"
 							:style="{background: 'url('+ si2BgIcon +') no-repeat'}"></a>
 						<a id="si_3" @click="si3Click" title="收藏"
 							:style="{background: 'url('+ si3BgIcon +') no-repeat'}"></a>
-						<el-badge v-if="newFriendApplyNum!=0" :value="newFriendApplyNum" :max="99"
-							style="float: right;margin-right: -8px;">
-						</el-badge>
+						
 						<a id="si_4" @click="si4Click" title="新朋友"
-							:style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a>
+							:style="{background: 'url('+ si4BgIcon +') no-repeat'}">
+							<el-badge v-if="newFriendApplyNum!=0" :value="newFriendApplyNum" :max="99"
+								style="float: right;margin-right: -8px;">
+							</el-badge>
+						</a>
 						<!-- <a id="si_4" @click="si4Click" title="新朋友" :style="{background: 'url('+ si4BgIcon +') no-repeat'}"></a> -->
 					</div>
 
@@ -331,7 +335,7 @@
 				</div>
 
 				<!--会话列表-->
-				<div class="middle on">
+				<div v-show="isShow_session_window" class="middle on">
 					<div class="wx_search">
 						<input type="text" v-model="searchValChat" placeholder="搜索" />
 						<button title="添加好友" @click="openFriends">+</button>
@@ -364,7 +368,7 @@
 				</div>
 
 				<!--好友列表-->
-				<div class="middle">
+				<div v-show="isShow_friend_window" class="middle">
 					<div class="wx_search">
 						<input type="text" v-model="searchValFriends" placeholder="搜索" />
 						<button title="添加好友" @click="openFriends">
@@ -388,7 +392,7 @@
 				</div>
 
 				<!--程序列表-->
-				<div class="middle">
+				<div v-show="isShow_program_window" class="middle">
 					<div class="wx_search">
 						<input type="text" placeholder="搜索收藏内容" />
 						<button>+</button>
@@ -429,7 +433,7 @@
 
 
 				<!--聊天窗口 start-->
-				<div v-show="isShow_talk_window" class="talk_window">
+				<div class="talk_window">
 					<div class="windows_top">
 						<div class="windows_top_box">
 							<span>{{chatDetail.nickName}}</span>
@@ -590,7 +594,7 @@
 				<!--聊天窗口 end-->
 
 				<!--最右侧好友资料卡 start-->
-				<div v-show="isShow_window_friend_info" class="window_friend_info">
+				<div class="window_friend_info">
 					<div class="friend_info">
 						<div class="info_icon">
 							<a><img src="images/icon/icon10.png" /></a>
@@ -695,12 +699,19 @@
 					newFriendApplyNum: 0, //好友申请数量
 					unReadAudio: 'audio/unReadAudio.mp3' ,//提示音路径
 					isShow_talk_window:true,//是否显示聊天窗口
-					isShow_window_friend_info:true//是否显示最右侧好友信息窗口
+					isShow_window_friend_info:true,//是否显示最右侧好友信息窗口
+					isShow_program_window:false,//程序列表
+					isShow_friend_window:false,//好友列表
+					isShow_session_window:true,//会话列表
+					
 					
 				},
 				filters: {
 					//局部过滤器
 					formatTime: function(date) {
+						if(date==undefined){
+							return "";
+						}
 						var d = new Date(date);
 						var month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1);
 						var day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
@@ -804,6 +815,10 @@
 						this.si4BgIcon = "images/icon/head_6.png";
 						this.listType = 1;
 						
+						this.isShow_session_window=true;
+						this.isShow_friend_window=false;
+						this.isShow_program_window=false;
+						this.newFriendsVisible = false;
 						//显示聊天窗口
 						this.isShow_talk_window=true;
 						this.isShow_window_friend_info=true;
@@ -816,16 +831,25 @@
 						this.si3BgIcon = "images/icon/head_4.png";
 						this.si4BgIcon = "images/icon/head_6.png";
 						this.listType = 0;
+
+						this.isShow_friend_window=true;
+						this.isShow_session_window=false;
+						this.isShow_program_window=false;
+						this.newFriendsVisible = false;
+						
 						//刷新通讯录列表
 						this.getCusList();
-
-
 					},
 					si3Click() {
 						this.si3BgIcon = "images/icon/head_4_1.png";
 						this.si1BgIcon = "images/icon/head_2.png";
 						this.si2BgIcon = "images/icon/head_3.png";
 						this.si4BgIcon = "images/icon/head_6.png";
+						
+						this.isShow_program_window=true;
+						this.isShow_friend_window=false;
+						this.isShow_session_window=false;
+						this.newFriendsVisible = false;
 					},
 					si4Click() {
 						this.si1BgIcon = "images/icon/head_2.png";
@@ -835,8 +859,8 @@
 						this.newFriendsVisible = true;
 						
 						//隐藏聊天窗口
-						this.isShow_talk_window=false;
-						this.isShow_window_friend_info=false;
+						// this.isShow_talk_window=false;
+						// this.isShow_window_friend_info=false;
 					},
 					fileClick() {
 						this.contentType = 5;
@@ -1109,9 +1133,9 @@
 
 					},
 					getChatSessionUnreadSum() { //获取会话列表未读总数
+						return;//先暂时不请求，会影响布局
 						var that = this;
 						var para = {
-							keyword: this.searchValChat
 						};
 						webApi("/chat/getChatSessionUnreadSum", para, function(data) {
 							var data = data.data;
@@ -1119,9 +1143,7 @@
 							if (data != [] && data.length > 0) {
 								//默认获取第一条相关数据
 								var obj = data[0];
-								setTimeout(function() {
-									vm.userInfoData.unreadSum = obj.unreadsum;
-								}, 1000)
+								vm.userInfoData.unreadSum = obj.unreadsum;
 							}
 						}, function(xhr, type, errorThrown) {
 							that.$XModal.alert({

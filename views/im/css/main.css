@@ -258,11 +258,11 @@ ul.am-dropdown-content>li>a:hover {
 	float: left;
 	background: #e6e5e5;
 	overflow: hidden;
-	display: none;
+	/* display: none; */
 }
 
 .on {
-	display: block;
+	/* display: block; */
 }
 
 .user_list,
