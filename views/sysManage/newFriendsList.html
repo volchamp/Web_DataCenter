@@ -127,9 +127,12 @@
 					<p class="user_message">{{item.createTime | formatDate}}</p>
 				</div>
 				<div style="margin-left: 20px;">
-					<button v-if="item.friendStatus==0" @click="openWind(item, index)" id="accept">同意</button>
-					<button v-if="item.friendStatus==0" @click="reject(item, index)" id="reject">拒绝</button>
-					<button v-if="item.friendStatus==0" @click="ignore(item, index)" id="ignore">忽略</button>
+					<!-- 如果是别人加我，才显示如下按钮 -->
+					<div v-if="item.userId!=userInfoData.userId">
+						<button v-if="item.friendStatus==0" @click="openWind(item, index)" id="accept">同意</button>
+						<button v-if="item.friendStatus==0" @click="reject(item, index)" id="reject">拒绝</button>
+						<button v-if="item.friendStatus==0" @click="ignore(item, index)" id="ignore">忽略</button>
+					</div>
 					<div v-if="item.friendStatus==1" style="display: flex;">
 						<!-- 如果是我加别人，显示图标 -->
 						<img v-if="item.userId==userInfoData.userId" style="width: 20px;height: 20px;" src="../../static/img/箭头_右上_o.png"/>
