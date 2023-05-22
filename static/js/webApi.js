@@ -9,8 +9,8 @@ var wsIm="ws://127.0.0.1:8088/api-im/websocket/";
 
 if(urlpath.indexOf("127.0.0.1")>-1)
 {
-	ip="124.222.4.40";
-	// ip="127.0.0.1";
+	// ip="124.222.4.40";
+	ip="127.0.0.1";
 	imgurl ='http://'+ip+':8091/files/';//文件访问路径
 	// 地址
 	curl='http://'+ip+':8088/api-im';
@@ -79,6 +79,62 @@ function webApi(method,parameter, fnSuccess, fnError, async) {
 		}
 	});
 }
+
+function webApiGet(method,parameter, fnSuccess, fnError, async) {
+	var url = curl + method; //地址
+	//判断是否需要同步ajax
+	if (typeof (async) == "undefined") {
+		async = true;
+	}
+	// $.support.cors=true;
+	$.ajax({
+		type: "get",
+		data: JSON.stringify(parameter),
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		url: url,
+		cache:false,
+		beforeSend: function(XMLHttpRequest) {
+			XMLHttpRequest.setRequestHeader("v_token", getCookie("v_token"));
+		},
+		crossDomain: true == !(document.all),
+		xhrFields: {
+			withCredentials: true
+		},
+		async: async,
+		success: function(data) {
+			//服务器返回响应，根据响应结果，分析是否登录成功；
+			var _msg=data.msg+"";
+			// console.log(_msg);
+			if (_msg.indexOf("TOKEN过期") > -1 || _msg.indexOf("登录超时") > -1 || _msg.indexOf("重新登录") > -1) {
+				// alert(_msg);
+				VXETable.modal.message({
+					message: _msg,
+					status: 'warning'
+				})
+				setTimeout(function () {
+					localStorage.clear();
+					var nowurl = window.top.location+"";
+					if (nowurl.indexOf("views") != -1) {
+						top.location.href = "../../login.html";
+					}
+				}, 3000);
+				return false;
+			} else {
+				fnSuccess(data);
+			}
+		},
+		complete: function (data) {
+		},
+		error: function (xhr, type, errorThrown) {
+			//异常处理；
+			fnError(xhr, type, errorThrown);
+		}
+	});
+}
+
+
+
 function webapiOther(method, parameter, fnSuccess, fnError, async) {
 	var url = curl1 + method; //正式地址
 	//判断是否需要同步ajax

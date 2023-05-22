@@ -45,7 +45,7 @@
 			}
 
 			#input_box {
-				margin-top: 5%;
+				margin-top: 3%;
 			}
 
 			#input_box i {
@@ -62,6 +62,26 @@
 				padding: 5px 10px;
 				margin-top: 10px;
 			}
+			
+			#captcha_box {
+				margin-top: 3%;
+			}
+			
+			#captcha_box input {
+				border: 0;
+				width: 35%;
+				font-size: 16px;
+				color: #fff;
+				background: #ffffff00;
+				border-bottom: 2px solid#eacda950;
+				padding: 5px 10px;
+				margin-top: 10px;
+			}
+			
+			#captcha_box i {
+				color: #d5d5d5;
+			}
+			
 
 
 			.register_input {
@@ -88,6 +108,10 @@
 			}
 
 			#pwd::-webkit-input-placeholder {
+				color: #D5D5D5;
+			}
+			
+			#cap::-webkit-input-placeholder {
 				color: #D5D5D5;
 			}
 		</style>
@@ -148,6 +172,11 @@
 					<input id="pwd" class="" type="password" v-model="formData.user_pwd" placeholder="请输入密码"
 						@keyup.enter="handelSave($event,1)">
 				</div>
+				<div id="captcha_box">
+					<i class="fa fa-key" aria-hidden="true"></i>
+					<input id="cap" type="text" v-model="formData.captcha" placeholder="图片验证码">
+					<img alt="验证码" id="captcha" name="captcha" @click="getValidateCode()" titie="点击刷新" style="margin-left:5px;width: 23%;height:40px;">
+				</div>
 			</div>
 			<div style="display: flex;justify-content: center;margin-top: 50px;">
 				<div @click="login" style="padding-top: 6px;cursor: pointer;width: 40%;height: 35px;border-radius: 10px;color: #fff;font-size: 16px;
@@ -174,7 +203,8 @@
 				formData: {
 					user_id: "",
 					user_pwd: "",
-					sessionId: ''
+					sessionId: '',
+					captcha: ''
 				},
 				showRegisterModal: false,
 				registInfo: {
@@ -186,6 +216,9 @@
 				}
 
 			},
+			created() {
+				this.getValidateCode();
+			},
 			methods: {
 				login() {
 					var that = this;
@@ -195,13 +228,15 @@
 					}
 					var signInputParms = {
 						user_id: this.formData.user_id,
-						user_password: Base64.encode(hex_md5(this.formData.user_pwd).toUpperCase())
+						user_password: Base64.encode(hex_md5(this.formData.user_pwd).toUpperCase()),
+						sessionID:this.formData.sessionId,
+						captcha:this.formData.captcha
 					};
 					webApi("/login/login", signInputParms, function(data) {
-						var result = data.result;
+						var code = data.code;
 						var msg = data.msg;
-						console.log(result)
-						if (result == "SUCCESS") {
+						console.log(code)
+						if (code == 200) {
 							that.showTipsI(msg)
 							setCookie("v_token", data.data);
 							setCookie("checked", that.checked);
@@ -315,6 +350,31 @@
 						return;
 					});
 
+				},
+				getValidateCode(){
+					var that=this;
+					var timestamp=(new Date()).valueOf();
+					webApiGet("/login/getValidateCode?timestamp="+timestamp, "", function(data) {
+						console.log(data)
+						var code = data.code;
+						var msg = data.msg;
+						console.log(code)
+						if (code == "200") {
+							$('#captcha').attr('src',data.data.img);
+							that.formData.sessionId = data.data.sessionId;
+						} else {
+							that.$XModal.alert({
+								message: msg,
+								status: 'warning'
+							})
+						}
+					}, function(xhr, type, errorThrown) {
+						that.$XModal.alert({
+							message: '请求出错!',
+							status: 'error'
+						})
+						return;
+					});
 				}
 			}
 		})
