@@ -1253,6 +1253,10 @@
 						if (obj.sendUser == this.userInfoData.userId) {
 							//如果返回的数据发送人是当前登录人，则清空输入框
 							this.msgContent = "";
+							//自己发完会话列表肯定更新，选中第一条即可
+							setTimeout(function() {
+								vm.changeChatBackground = 0;
+							}, 1000)
 						}
 						if(obj.receiver==this.userInfoData.userId){
 							//如果接收人是当前登录人，播放提示音
