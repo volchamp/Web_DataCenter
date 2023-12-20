@@ -611,6 +611,11 @@
 						</div>
 						<div style="width: 80%;height: 1px;background-color: #ededed;margin-top: 20px;"></div>
 					</div>
+					<div style="text-align: center;padding: 10px;">
+						<div style="float: left;">
+							<img v-for="item in photoWall" style="max-width: 42%;margin: 8px;max-height: 110px;" :src="imgurl+item.url" />
+						</div>
+					</div>
 				</div>
 				<!--最右侧好友资料卡 end-->
 			</div>
@@ -703,7 +708,7 @@
 					isShow_program_window:false,//程序列表
 					isShow_friend_window:false,//好友列表
 					isShow_session_window:true,//会话列表
-					
+					photoWall:[]//照片墙
 					
 				},
 				filters: {
@@ -1121,6 +1126,8 @@
 									vm.msgList = [];
 									vm.getMessageHis(vm.pageNumber, vm.pageSize, vm.userInfoData.userId,
 										vm.chatDetail.friendId);
+									//获取照片墙
+									vm.getPhotoWallList(vm.chatDetail.friendId);
 								}, 2000)
 							}
 						}, function(xhr, type, errorThrown) {
@@ -1198,6 +1205,9 @@
 
 						//清空这个人未读消息数
 						this.updateUnreadCount(0);
+						
+						//获取照片墙
+						this.getPhotoWallList(this.chatDetail.friendId);
 					},
 					chatClick(item, index) { //点击聊天列表
 						//先判断一下当前的未读数，因为选中它的时候默认隐藏，这里切换下一个人之前需要清空上一个人未读数
@@ -1224,6 +1234,27 @@
 							//清空这个人未读消息数
 							this.updateUnreadCount(0);
 						}
+						
+						//获取照片墙
+						this.getPhotoWallList(this.chatDetail.friendId);
+					},
+					getPhotoWallList(user_id) { //获取照片墙
+						var that = this;
+						var para = {
+							"user_id":user_id
+						};
+						webApi("/photowall/getPhotoWallList", para, function(data) {
+							var data = data.data;
+							that.photoWall=data;
+							//更新聊天列表
+						}, function(xhr, type, errorThrown) {
+							that.$XModal.alert({
+								message: '请求出错啦，请联系大佬超!',
+								status: 'error'
+							})
+							return;
+						});
+					
 					},
 					sendMsg() { //发送消息
 						if (websocket.readyState == 1) {
