@@ -38,8 +38,8 @@
 		}
 
 		.info_text {
-			font-size: 15px;
-			color: grey;
+			font-size: 16px;
+			color: #535957;
 			margin: 10px;
 		}
 
@@ -189,7 +189,14 @@
 					<div><span class="info_text">昵称：{{userInfoData.nickName}}</span></div>
 					<div><span class="info_text">性别：{{userInfoData.sex | formatSex}}</span></div>
 					<div><span class="info_text">年龄：{{userInfoData.age}}</span></div>
-					<!-- <div><span class="info_text">地区:{{userInfoData.userId}}</span></div> -->
+					<div><span class="info_text">地区：云南 昆明</span></div>
+					<div style="width: 100%;height: 1px;background-color: #ededed;margin-top: 20px;"></div>
+					<div><span class="info_text">照片墙</span></div>
+					<div style="text-align: center;padding: 10px;">
+						<div style="float: left;">
+							<img v-for="item in photoWall" style="max-width: 42%;margin: 8px;max-height: 110px;" :src="imgurl+item.url" />
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -215,7 +222,8 @@
 				personalSign: "",
 				fileUploadUrl: curl + '/attach/uploadAtt', //文件上传接口
 				fileList: [], //上传之后返回的文件路径列表
-				avatarUrl: "" //上传成功后的头像url相对路径
+				avatarUrl: "" ,//上传成功后的头像url相对路径
+				photoWall:[]//照片墙
 			},
 			filters: {
 				formatAddr: function(addr) {
@@ -257,7 +265,7 @@
 				}
 			},
 			created() {
-
+				
 			},
 			mounted() {
 				this.getUserInfo();
@@ -318,6 +326,24 @@
 						}
 					}
 				},
+				getPhotoWallList(user_id) { //获取照片墙
+					var that = this;
+					var para = {
+						"user_id":user_id
+					};
+					webApi("/photowall/getPhotoWallList", para, function(data) {
+						var data = data.data;
+						that.photoWall=data;
+						//更新聊天列表
+					}, function(xhr, type, errorThrown) {
+						that.$XModal.alert({
+							message: '请求出错啦，请联系大佬超!',
+							status: 'error'
+						})
+						return;
+					});
+				
+				},
 				editSign: function() {
 					this.isShowSignInput = true;
 					this.isShowSignSpan = false;
@@ -342,6 +368,7 @@
 								that.userInfoData.userAvatar = userinfo.headUrl;
 								that.avatarUrl = userinfo.headUrl;
 							}
+							vm.getPhotoWallList(vm.userInfoData.userId);
 
 						} else {
 							that.$XModal.alert({
